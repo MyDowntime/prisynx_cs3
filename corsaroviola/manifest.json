@@ -1,0 +1,22 @@
+{
+  "name": "Il Corsaro Viola",
+  "version": "1.0.3",
+  "description": "Torrent P2P da Il Corsaro Viola con seeders, bitrate reale e formati 4K/1080p per Nuvio",
+  "author": "PriSynx",
+  "scrapers": [
+    {
+      "id": "prisynx-corsaroviola",
+      "name": "🏴‍☠️ IlCorsaroViola",
+      "description": "Torrent P2P da Il Corsaro Viola con seeders, bitrate reale e formati 4K/1080p",
+      "version": "1.0.3",
+      "author": "PriSynx",
+      "resources": ["stream"],
+      "idPrefixes": ["tmdb:", "tt"],
+      "supportedTypes": ["movie", "series", "tv"],
+      "filename": "corsaroviola.js",
+      "enabled": true,
+      "contentLanguage": ["it", "en"],
+      "formats": ["torrent"]
+    }
+  ]
+}

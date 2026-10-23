@@ -3,6 +3,6 @@
   "description": "PriSynx per CloudStream: 17 estensioni separate e gestibili singolarmente (VixSrc, PaCC, Guardoserie, Altadefinizione, RealTime, Toonitalia, IlCorsaroViola, AnimeUnity, AnimeSaturn, AnimeWorld, Filmez, OnlineSerieTV, CB01, Eurostreaming, MovyITA, DualSync, RaiPlay).",
   "manifestVersion": 1,
   "pluginLists": [
-    "https://raw.githubusercontent.com/MyDowntime/PriSynxCS/main/plugins.json"
+    "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/builds/plugins.json"
   ]
 }
