@@ -10,5 +10,5 @@ cloudstream {
     status = 1
     tvTypes = listOf("Anime", "AnimeMovie", "OVA")
     language = "it"
-    iconUrl = "https://raw.githubusercontent.com/qwertyuiop8899/PriSynx/main/assets/logos/AnimeWorld.png"
+    iconUrl = "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/AnimeWorld.png"
 }

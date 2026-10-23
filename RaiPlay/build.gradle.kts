@@ -6,5 +6,5 @@ cloudstream {
     status = 1
     tvTypes = listOf("Movie", "TvSeries", "Live")
     language = "it"
-    iconUrl = "https://raw.githubusercontent.com/qwertyuiop8899/PriSynx/main/assets/logos/RaiPlay.png"
+    iconUrl = "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/RaiPlay.png"
 }
