@@ -27,6 +27,12 @@ object AudioSync {
     /** One encode always has the same playlist length; other encodes differ by 0.5 s or more. */
     private const val LENGTH_TOLERANCE_S = 0.25
 
+    /** Movy streams the vidfast files: ToastFlix files Movy measures under that name. */
+    private fun aliases(provider: String): Set<String> = when (val p = provider.lowercase()) {
+        "movy" -> setOf("movy", "vidfast")
+        else -> setOf(p)
+    }
+
     private val fpsPairs = listOf(23.976 to 24.0, 24.0 to 25.0, 23.976 to 25.0)
 
     data class Measure(
@@ -68,7 +74,7 @@ object AudioSync {
             val list = candidates.await().toMutableList()
             val (state, done) = jobs.await()
             done.forEach { d ->
-                if (list.none { abs(it.videoDuration - d.videoDuration) <= LENGTH_TOLERANCE_S }) list.add(d)
+                if (list.none { it.provider == d.provider && abs(it.videoDuration - d.videoDuration) <= LENGTH_TOLERANCE_S }) list.add(d)
             }
             Info(key, list, state)
         }
@@ -84,15 +90,19 @@ object AudioSync {
         return measureOf(node, provider, Double.NaN)
     }
 
-    fun match(info: Info, videoLength: Double): Measure? = info.measures
-        .filter { abs(it.videoDuration - videoLength) <= LENGTH_TOLERANCE_S }
+    /**
+     * Only measures of the same provider: different providers can serve encodes of identical
+     * length that still start at a different point (F1: cinejoy +5.95 s vs Movy -4.06 s).
+     */
+    fun match(info: Info, videoLength: Double, provider: String): Measure? = info.measures
+        .filter { it.provider.lowercase() in aliases(provider) && abs(it.videoDuration - videoLength) <= LENGTH_TOLERANCE_S }
         .minByOrNull { abs(it.videoDuration - videoLength) }
 
     /** Same decision tree as `syncFor` in the Nuvio DualSync plugin. */
     fun verdict(info: Info, videoLength: Double, provider: String, fallback: Measure? = null): Verdict {
-        info.jobs.errors[provider.lowercase()]?.let { return Verdict(Level.RED, "\u274C fallito", null, false) }
-        val hit = (if (videoLength > 0) match(info, videoLength) else null) ?: fallback
+        val hit = (if (videoLength > 0) match(info, videoLength, provider) else null) ?: fallback
         if (hit != null && hit.status == "ok") return classify(hit)
+        info.jobs.errors[provider.lowercase()]?.let { return Verdict(Level.RED, "\u274C fallito", null, false) }
         jobVerdict(info.jobs)?.let { return it }
         if (hit != null && hit.status == "incompatible") return Verdict(Level.YELLOW, "\u23F3 da verificare", null, false)
         if (hit != null) return Verdict(Level.RED, "\u26D4 sync n/d", null, true)
