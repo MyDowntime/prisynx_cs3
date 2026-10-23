@@ -19,7 +19,7 @@ android {
 
 tasks.named("preBuild").configure { dependsOn(syncHubSources) }
 
-version = 1
+version = 2
 
 cloudstream {
     description = "PriSynx: tutte le sorgenti in un'unica estensione, con menu per scegliere provider, ordine, cataloghi TMDB e TopX."
