@@ -2,7 +2,7 @@ android {
     sourceSets.getByName("main").java.srcDir(rootProject.file("shared/src/main/kotlin"))
 }
 
-version = 2
+version = 3
 
 cloudstream {
     description = "MovyITA: film e serie TV con sorgenti VixSrc."

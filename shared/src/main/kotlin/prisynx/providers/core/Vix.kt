@@ -128,6 +128,24 @@ fun vixEnglishAudio(tracks: List<VixMedia>): VixMedia? = tracks.firstOrNull {
 fun vixSubtitles(tracks: List<VixMedia>): List<VixMedia> =
     tracks.filter { it.type == "SUBTITLES" }
 
+/**
+ * Italian audio and VixSrc subtitles moved by [delayMs] through the loopback proxy
+ * (VixSrc subtitles are timed on the Italian release, like the audio).
+ * Null when the proxy cannot start; subtitles that cannot be proxied stay as they are.
+ */
+fun vixDelayedTracks(
+    audio: VixMedia,
+    subtitles: List<VixMedia>,
+    headers: Map<String, String>,
+    delayMs: Int
+): Pair<VixMedia, List<VixMedia>>? {
+    val audioUri = AudioShift.audio(audio.uri, headers, delayMs) ?: return null
+    val subs = subtitles.map { sub ->
+        AudioShift.subtitles(sub.uri, headers, delayMs)?.let { sub.copy(uri = it) } ?: sub
+    }
+    return audio.copy(uri = audioUri) to subs
+}
+
 private fun attribute(line: String, key: String): String? {
     val m = Regex("(?:^|[,:])$key=(\"([^\"]*)\"|[^,]*)").find(line) ?: return null
     return m.groupValues[2].ifEmpty { m.groupValues[1] }

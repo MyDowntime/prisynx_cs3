@@ -20,7 +20,18 @@ import java.util.concurrent.atomic.AtomicInteger
 object LocalHls {
     private data class Entry(val body: ByteArray, val createdAt: Long)
 
+    /** Response produced by a dynamic [Handler]. */
+    class Reply(val mime: String, val body: ByteArray)
+
+    /** Serves `/<id>/<path>` requests; return null for 404. Runs on a pool thread, blocking is fine. */
+    fun interface Handler {
+        fun serve(path: String): Reply?
+    }
+
+    private data class Route(val handler: Handler, val createdAt: Long)
+
     private val entries = ConcurrentHashMap<String, Entry>()
+    private val routes = ConcurrentHashMap<String, Route>()
     private val pool = Executors.newCachedThreadPool { runnable ->
         Thread(runnable, "prisynx-hls").apply { isDaemon = true }
     }
@@ -36,6 +47,17 @@ object LocalHls {
         val id = "m${System.currentTimeMillis().toString(36)}${seq.incrementAndGet()}"
         entries[id] = Entry(text.toByteArray(Charsets.UTF_8), System.currentTimeMillis())
         return "http://127.0.0.1:${socket.localPort}/$id.m3u8"
+    }
+
+    /** Register [handler] and return its loopback base URL (no trailing slash), or null. */
+    fun register(handler: Handler): String? {
+        val socket = ensureServer() ?: return null
+        if (routes.size >= 512) {
+            routes.entries.minByOrNull { it.value.createdAt }?.let { routes.remove(it.key) }
+        }
+        val id = "h${System.currentTimeMillis().toString(36)}${seq.incrementAndGet()}"
+        routes[id] = Route(handler, System.currentTimeMillis())
+        return "http://127.0.0.1:${socket.localPort}/$id"
     }
 
     private fun cleanup() {
@@ -95,15 +117,39 @@ object LocalHls {
                     }
                 }
             }
-            val requestLine = header.toString("ISO-8859-1").lineSequence().firstOrNull().orEmpty()
+            val headerText = header.toString("ISO-8859-1")
+            val requestLine = headerText.lineSequence().firstOrNull().orEmpty()
             val method = requestLine.substringBefore(' ', "").uppercase()
             val path = requestLine.substringAfter(' ', "").substringBefore(' ').substringBefore('?')
-            val id = path.trim('/').removeSuffix(".m3u8")
-            val entry = entries[id]
-            when {
-                entry == null -> write(output, "404 Not Found", "text/plain", "not found".toByteArray())
-                method == "HEAD" -> writeHead(output, entry.body.size)
-                else -> write(output, "200 OK", "application/vnd.apple.mpegurl", entry.body)
+            val trimmed = path.trim('/')
+            val entry = entries[trimmed.removeSuffix(".m3u8")]
+            val reply = if (entry != null) {
+                Reply("application/vnd.apple.mpegurl", entry.body)
+            } else {
+                val route = routes[trimmed.substringBefore('/')]
+                try {
+                    route?.handler?.serve(trimmed.substringAfter('/', ""))
+                } catch (t: Throwable) {
+                    null
+                }
+            }
+            if (reply == null) {
+                write(output, "404 Not Found", "text/plain", "not found".toByteArray())
+            } else {
+                val range = Regex("(?im)^range:\\s*bytes=(\\d+)-(\\d*)").find(headerText)
+                val size = reply.body.size
+                val from = range?.groupValues?.get(1)?.toLongOrNull()
+                if (from != null && from < size) {
+                    val to = (range.groupValues[2].toLongOrNull() ?: (size - 1L)).coerceAtMost(size - 1L)
+                    val part = reply.body.copyOfRange(from.toInt(), to.toInt() + 1)
+                    val extra = "Content-Range: bytes $from-$to/$size\r\n"
+                    if (method == "HEAD") writeHead(output, "206 Partial Content", reply.mime, part.size, extra)
+                    else write(output, "206 Partial Content", reply.mime, part, extra)
+                } else if (method == "HEAD") {
+                    writeHead(output, "200 OK", reply.mime, size)
+                } else {
+                    write(output, "200 OK", reply.mime, reply.body)
+                }
             }
             output.flush()
         } catch (t: Throwable) {
@@ -117,20 +163,17 @@ object LocalHls {
         }
     }
 
-    private fun write(output: OutputStream, status: String, mime: String, body: ByteArray) {
-        val head = "HTTP/1.1 $status\r\n" +
-            "Content-Type: $mime\r\n" +
-            "Content-Length: ${body.size}\r\n" +
-            "Cache-Control: no-store\r\n" +
-            "Connection: close\r\n\r\n"
-        output.write(head.toByteArray(Charsets.ISO_8859_1))
+    private fun write(output: OutputStream, status: String, mime: String, body: ByteArray, extra: String = "") {
+        writeHead(output, status, mime, body.size, extra)
         output.write(body)
     }
 
-    private fun writeHead(output: OutputStream, length: Int) {
-        val head = "HTTP/1.1 200 OK\r\n" +
-            "Content-Type: application/vnd.apple.mpegurl\r\n" +
+    private fun writeHead(output: OutputStream, status: String, mime: String, length: Int, extra: String = "") {
+        val head = "HTTP/1.1 $status\r\n" +
+            "Content-Type: $mime\r\n" +
             "Content-Length: $length\r\n" +
+            "Accept-Ranges: bytes\r\n" +
+            extra +
             "Cache-Control: no-store\r\n" +
             "Connection: close\r\n\r\n"
         output.write(head.toByteArray(Charsets.ISO_8859_1))

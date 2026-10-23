@@ -6,6 +6,10 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import prisynx.providers.core.AudioSync
 import prisynx.providers.core.MediaMeta
 import prisynx.providers.core.MediaRef
 import prisynx.providers.core.TmdbProvider
@@ -17,6 +21,8 @@ import prisynx.providers.core.json
 import prisynx.providers.core.net
 import prisynx.providers.core.qualityLabel
 import prisynx.providers.core.vixAudio
+import prisynx.providers.core.vixDelayedTracks
+import prisynx.providers.core.vixEnglishAudio
 import prisynx.providers.core.vixMedia
 import prisynx.providers.core.vixSubtitles
 
@@ -60,44 +66,83 @@ class DualSyncProvider : TmdbProvider("DualSync", "https://cinejoy.pk") {
         }
         if (encodes.isEmpty()) return false
 
-        val master = fetchVixMaster(
-            ref.id,
-            ref.isTv,
-            ref.season ?: 1,
-            ref.episode ?: 1
-        )
+        val season = ref.season ?: 1
+        val episode = ref.episode ?: 1
+        val (master, info) = coroutineScope {
+            val master = async { fetchVixMaster(ref.id, ref.isTv, season, episode) }
+            val info = async { AudioSync.lookup(meta.imdbId, ref.isTv, season, episode) }
+            master.await() to info.await()
+        }
         val tracks = master?.let { vixMedia(it.text, it.url) }.orEmpty()
         val audio = vixAudio(tracks)
         val subs = vixSubtitles(tracks)
 
-        var emitted = 0
-        val seen = HashSet<Int>()
-        for (encode in encodes) {
-            for (quality in listOf(2160, 1080)) {
-                val video = encode.renditions[quality] ?: continue
-                if (!seen.add(quality)) continue
-                if (audio != null) {
-                    emit(
-                        callback = callback,
-                        url = publishCombinedMaster(video, quality, audio, subs),
-                        label = "DualSync ${qualityLabel(quality)} ITA",
-                        quality = quality,
-                        type = ExtractorLinkType.M3U8,
-                        referer = "https://cinejoy.pk/",
-                        headers = encode.headers
+        // ToastFlix keys its measurements on the playlist length of the encode's top rendition.
+        class Candidate(val encode: Encode, val quality: Int, val url: String, val length: Double, val sync: AudioSync.Verdict)
+        val candidates = coroutineScope {
+            encodes.map { encode ->
+                async {
+                    var length = 0.0
+                    for (q in listOf(2160, 1080)) {
+                        val url = encode.renditions[q] ?: continue
+                        length = AudioSync.playlistLength(url, encode.headers)
+                        if (length > 0) break
+                    }
+                    val sync = AudioSync.verdict(info, length, "cinejoy")
+                    listOf(2160, 1080).mapNotNull { q ->
+                        encode.renditions[q]?.let { Candidate(encode, q, it, length, sync) }
+                    }
+                }
+            }.awaitAll().flatten()
+        }
+
+        if (audio != null && master != null) {
+            val unmeasured = candidates.filter { !it.sync.measured && it.length >= 30 && info.jobs.status == null }
+                .distinctBy { it.encode.server to it.quality }
+                .groupBy { it.encode.server }
+                .map { (server, list) ->
+                    mapOf(
+                        "provider" to "cinejoy",
+                        "server" to server,
+                        "video_duration" to list.maxOf { it.length },
+                        "headers" to list.first().encode.headers,
+                        "renditions" to list.map { mapOf("resolution" to it.quality, "url" to it.url) }
                     )
+                }
+            AudioSync.report(info.mediaKey, audio.uri, vixEnglishAudio(tracks)?.uri, master.headers, unmeasured)
+        }
+
+        var emitted = 0
+        for (quality in listOf(2160, 1080)) {
+            val best = candidates.filter { it.quality == quality }.minByOrNull { it.sync.rank } ?: continue
+            val video = best.url
+            if (audio != null && master != null) {
+                val delay = best.sync.delayMs
+                val (itaAudio, itaSubs) = if (delay != null && delay != 0) {
+                    vixDelayedTracks(audio, subs, master.headers, delay) ?: (audio to subs)
+                } else {
+                    audio to subs
                 }
                 emit(
                     callback = callback,
-                    url = video,
-                    label = "DualSync ${qualityLabel(quality)} solo video",
+                    url = publishCombinedMaster(video, quality, itaAudio, itaSubs),
+                    label = "DualSync ${qualityLabel(quality)} ITA ${best.sync.badge}",
                     quality = quality,
                     type = ExtractorLinkType.M3U8,
                     referer = "https://cinejoy.pk/",
-                    headers = encode.headers
+                    headers = best.encode.headers
                 )
-                emitted++
             }
+            emit(
+                callback = callback,
+                url = video,
+                label = "DualSync ${qualityLabel(quality)} solo video",
+                quality = quality,
+                type = ExtractorLinkType.M3U8,
+                referer = "https://cinejoy.pk/",
+                headers = best.encode.headers
+            )
+            emitted++
         }
         return emitted > 0
     }

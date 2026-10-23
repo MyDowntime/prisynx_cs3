@@ -4,6 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.lagradost.cloudstream3.SubtitleFile
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import prisynx.providers.core.AudioSync
 import prisynx.providers.core.MediaMeta
 import prisynx.providers.core.MediaRef
 import prisynx.providers.core.TmdbProvider
@@ -15,6 +19,8 @@ import prisynx.providers.core.json
 import prisynx.providers.core.net
 import prisynx.providers.core.qualityLabel
 import prisynx.providers.core.vixAudio
+import prisynx.providers.core.vixDelayedTracks
+import prisynx.providers.core.vixEnglishAudio
 import prisynx.providers.core.vixMedia
 import prisynx.providers.core.vixSubtitles
 
@@ -96,14 +102,62 @@ class MovyitaProvider : TmdbProvider("MovyITA", "https://www.movy.sx") {
 
         if (sources.isEmpty()) return false
 
-        val (audio, subs) = tracksFor(ref, subtitles)
+        val season = ref.season ?: 1
+        val episode = ref.episode ?: 1
+        val ita = coroutineScope {
+            val tracks = async { tracksFor(ref) }
+            val info = async { AudioSync.lookup(meta.imdbId, ref.isTv, season, episode) }
+            val status = async { AudioSync.status(meta.imdbId, ref.isTv, season, episode, "movy") }
+            val lengths = sources.map { source -> async { AudioSync.playlistLength(source.url, headers) } }
+            Ita(tracks.await(), info.await(), status.await(), lengths.awaitAll())
+        }
+        val tracks = ita.tracks
+        val audio = tracks?.let { vixAudio(it.media) }
+        val vixSubs = tracks?.let { vixSubtitles(it.media) }.orEmpty()
+        val syncs = sources.mapIndexed { i, source ->
+            // ToastFlix's per-provider verdict was measured on the miami/boise files only.
+            val fallback = if (source.server in measuredServers) ita.status else null
+            AudioSync.verdict(ita.info, ita.lengths[i], "movy", fallback)
+        }
 
-        sources.sortedByDescending { it.quality }.forEach { source ->
-            if (audio != null) {
+        if (audio != null && tracks != null && ita.info.jobs.status == null) {
+            val unmeasured = sources.indices.filter { !syncs[it].measured && sources[it].quality >= 1080 }
+            val server = unmeasured.firstOrNull()?.let { sources[it].server }
+            if (server != null) {
+                val picked = unmeasured.filter { sources[it].server == server }
+                val length = picked.maxOf { ita.lengths[it] }.takeIf { it >= 30 } ?: ((meta.runtime ?: 90) * 60.0)
+                AudioSync.report(
+                    ita.info.mediaKey,
+                    audio.uri,
+                    vixEnglishAudio(tracks.media)?.uri,
+                    tracks.headers,
+                    listOf(
+                        mapOf(
+                            "provider" to "movy",
+                            "server" to server,
+                            "video_duration" to length,
+                            "headers" to headers,
+                            "renditions" to picked.map { mapOf("resolution" to sources[it].quality, "url" to sources[it].url) }
+                        )
+                    )
+                )
+            }
+        }
+
+        sources.indices.sortedByDescending { sources[it].quality }.forEach { i ->
+            val source = sources[i]
+            val sync = syncs[i]
+            if (audio != null && tracks != null) {
+                val delay = sync.delayMs
+                val (itaAudio, itaSubs) = if (delay != null && delay != 0) {
+                    vixDelayedTracks(audio, vixSubs, tracks.headers, delay) ?: (audio to vixSubs)
+                } else {
+                    audio to vixSubs
+                }
                 emit(
                     callback = callback,
-                    url = publishCombinedMaster(source.url, source.quality, audio, subs),
-                    label = "MovyITA ${qualityLabel(source.quality)} ITA",
+                    url = publishCombinedMaster(source.url, source.quality, itaAudio, itaSubs + subtitles),
+                    label = "MovyITA ${qualityLabel(source.quality)} ITA ${sync.badge}",
                     quality = source.quality,
                     type = ExtractorLinkType.M3U8,
                     referer = "$site/",
@@ -123,20 +177,25 @@ class MovyitaProvider : TmdbProvider("MovyITA", "https://www.movy.sx") {
         return sources.isNotEmpty()
     }
 
-    private suspend fun tracksFor(
-        ref: MediaRef,
-        movySubs: List<VixMedia>
-    ): Pair<VixMedia?, List<VixMedia>> {
+    private class VixTracks(val media: List<VixMedia>, val headers: Map<String, String>)
+
+    private class Ita(
+        val tracks: VixTracks?,
+        val info: AudioSync.Info,
+        val status: AudioSync.Measure?,
+        val lengths: List<Double>
+    )
+
+    private val measuredServers = setOf("miami", "boise")
+
+    private suspend fun tracksFor(ref: MediaRef): VixTracks? {
         val master = fetchVixMaster(
             ref.id,
             ref.isTv,
             ref.season ?: 1,
             ref.episode ?: 1
-        ) ?: return null to movySubs
-        val tracks = vixMedia(master.text, master.url)
-        val audio = vixAudio(tracks) ?: return null to movySubs
-        val subs = vixSubtitles(tracks) + movySubs
-        return audio to subs
+        ) ?: return null
+        return VixTracks(vixMedia(master.text, master.url), master.headers)
     }
 
     // ------------------------------------------------------------ Movy API

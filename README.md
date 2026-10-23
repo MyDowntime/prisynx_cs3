@@ -148,7 +148,7 @@ Sorgente basata su IMDb (film e serie) con stream HLS fino a 4K. I token del CDN
 
 **Note e limiti**
 
-- CloudStream non supporta l'auto-sync audio di Nuvio: MovyITA/DualSync uniscono video e audio italiano in un unico master HLS, pubblicato su un mini-server HTTP di loopback (CloudStream non apre master `data:`); in caso di player esterno senza supporto HTTP locale viene mostrato anche il fallback “solo video”.
+- **Auto-sync audio su CloudStream** (MovyITA/DualSync): l'offset misurato da ToastFlix/AutoSync viene applicato automaticamente. CloudStream non ha un ritardo audio, quindi la traccia italiana VixSrc passa da un mini-server HTTP di loopback che riscrive i timestamp (PTS/PCR) dei segmenti TS e aggiunge silenzio iniziale; anche i sottotitoli VixSrc vengono traslati. Video e audio sono uniti in un unico master HLS. Il nome del link mostra lo stato: `🔊✅ in sync`, `⏱️ +1,275 s auto` (offset applicato), `⏳ da misurare` / `in coda` / `⚙️ in calcolo` (misurazione richiesta ad AutoSync: riapri il titolo più tardi), `⛔ tagli` / `versioni diverse` (non sincronizzabile), `⚠️ … · player esterno` (offset oltre 60 s). Resta anche il fallback “solo video”.
 - I provider che usano `clicka.cc` (Eurostreaming/CB01) risolvono la sorgente MaxStream/uprot; i server MixDrop/Turbovid/DeltaBit dietro clicka non sono inclusi.
 - Le pagine “cartella” di CB01/Eurostreaming non vengono seguite.
 - Alcuni host (Filmez, OnlineSerieTV, CB01, Eurostreaming) possono richiedere il worker captcha e degradare se il servizio non è raggiungibile.
