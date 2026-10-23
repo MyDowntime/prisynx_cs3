@@ -117,6 +117,30 @@ object HubSettingsDialog {
             sourcesSection(context, body)
         }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
         body.addView(bulk)
+
+        val torrents = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, dp(context, 8), 0, dp(context, 2))
+        }
+        val count = TextView(context).apply {
+            text = "IlCorsaroViola: max ${HubSettings.torrentMax} risultati"
+            setTextColor(TEXT)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+        }
+        val minus = arrow(context, "\u2212", HubSettings.torrentMax > 1) {
+            HubSettings.torrentMax = HubSettings.torrentMax - 1
+            sourcesSection(context, body)
+        }
+        val plus = arrow(context, "+", HubSettings.torrentMax < 20) {
+            HubSettings.torrentMax = HubSettings.torrentMax + 1
+            sourcesSection(context, body)
+        }
+        torrents.addView(count, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        torrents.addView(minus)
+        torrents.addView(plus)
+        body.addView(torrents)
+        body.addView(note(context, "Prima il 4K e il Full HD con più seed (se presenti), poi i più seedati."))
     }
 
     private fun tmdbSection(context: Context, body: LinearLayout) {

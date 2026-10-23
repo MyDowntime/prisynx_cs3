@@ -2,6 +2,7 @@ package prisynx.hub
 
 import android.content.Context
 import android.content.SharedPreferences
+import prisynx.providers.core.ProviderOptions
 import prisynx.providers.AltadefinizioneProvider
 import prisynx.providers.AnimeSaturnProvider
 import prisynx.providers.AnimeUnityProvider
@@ -67,6 +68,7 @@ object HubSettings {
 
     fun init(context: Context) {
         prefs = context.applicationContext.getSharedPreferences("prisynx_hub", Context.MODE_PRIVATE)
+        ProviderOptions.torrentMaxResults = torrentMax
     }
 
     private fun bool(key: String, def: Boolean) = prefs?.getBoolean(key, def) ?: def
@@ -92,6 +94,15 @@ object HubSettings {
     fun setSourceEnabled(id: String, on: Boolean) = setBool("source_on_$id", on)
 
     fun enabledSources(): List<HubSource> = orderedSources().filter { isSourceEnabled(it.id) }
+
+    /** Max IlCorsaroViola torrents in the stream list. */
+    var torrentMax: Int
+        get() = prefs?.getInt("torrent_max", ProviderOptions.DEFAULT_TORRENT_MAX) ?: ProviderOptions.DEFAULT_TORRENT_MAX
+        set(value) {
+            val v = value.coerceIn(1, 20)
+            prefs?.edit()?.putInt("torrent_max", v)?.apply()
+            ProviderOptions.torrentMaxResults = v
+        }
 
     // ------------------------------------------------------------ TMDB rows
 
@@ -119,5 +130,6 @@ object HubSettings {
 
     fun resetAll() {
         prefs?.edit()?.clear()?.apply()
+        ProviderOptions.torrentMaxResults = ProviderOptions.DEFAULT_TORRENT_MAX
     }
 }

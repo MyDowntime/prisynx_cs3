@@ -6,6 +6,7 @@ import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import prisynx.providers.core.MediaMeta
 import prisynx.providers.core.MediaRef
+import prisynx.providers.core.ProviderOptions
 import prisynx.providers.core.TmdbProvider
 import prisynx.providers.core.UA_PC
 import prisynx.providers.core.enc
@@ -55,25 +56,34 @@ class CorsaroViolaProvider : TmdbProvider("IlCorsaroViola", "https://corsaroviol
 
         val results = root.path("results")
         if (!results.isArray) return false
-        var emitted = 0
+        class Torrent(val magnet: String, val title: String, val quality: Int, val seeders: Int, val size: Long)
         val seen = HashSet<String>()
-        for (item in results) {
-            if (emitted >= 20) break
+        val all = results.mapNotNull { item ->
             val magnet = item.path("magnet").asText("")
-            if (!magnet.startsWith("magnet:") || !seen.add(magnet)) continue
+            if (!magnet.startsWith("magnet:") || !seen.add(magnet)) return@mapNotNull null
             val rawTitle = item.path("title").asText("")
-            val quality = qualityFromText(rawTitle)
-            val seeders = item.path("seeders").asInt(0)
-            val size = item.path("file").path("size").asLong(0)
-            val italian = Regex("ita|italian|italiano", RegexOption.IGNORE_CASE).containsMatchIn(rawTitle)
-            val label = "IlCorsaroViola ${if (quality > 0) "${quality}p" else "HD"} " +
+            Torrent(magnet, rawTitle, qualityFromText(rawTitle), item.path("seeders").asInt(0), item.path("file").path("size").asLong(0))
+        }.sortedByDescending { it.seeders }
+
+        // Best seeded 4K and Full HD first (when present), then fill up with the most seeded.
+        val max = ProviderOptions.torrentMaxResults.coerceAtLeast(1)
+        val picked = LinkedHashSet<Torrent>()
+        all.firstOrNull { it.quality >= 2160 }?.let(picked::add)
+        all.firstOrNull { it.quality in 1080 until 2160 }?.let(picked::add)
+        all.forEach { if (picked.size < max) picked.add(it) }
+        val chosen = picked.take(max).sortedByDescending { it.seeders }
+
+        var emitted = 0
+        for (t in chosen) {
+            val italian = Regex("ita|italian|italiano", RegexOption.IGNORE_CASE).containsMatchIn(t.title)
+            val label = "IlCorsaroViola ${if (t.quality > 0) "${t.quality}p" else "HD"} " +
                 (if (italian) "\uD83C\uDDEE\uD83C\uDDF9" else "\uD83C\uDDEC\uD83C\uDDE7") +
-                " \u00B7 $seeders seed" + (if (size > 0) " \u00B7 ${size / (1024 * 1024)} MB" else "")
+                " \u00B7 ${t.seeders} seed" + (if (t.size > 0) " \u00B7 ${t.size / (1024 * 1024)} MB" else "")
             emit(
                 callback = callback,
-                url = magnet,
+                url = t.magnet,
                 label = label,
-                quality = quality,
+                quality = t.quality,
                 type = ExtractorLinkType.MAGNET,
                 referer = "",
                 headers = emptyMap()

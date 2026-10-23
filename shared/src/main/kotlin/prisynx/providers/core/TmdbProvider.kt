@@ -562,6 +562,22 @@ abstract class TmdbProvider(
         )
     }
 
+    /** CloudStream extractors name links after the host only ("MixDrop"): prefix the provider. */
+    private suspend fun withProviderName(link: ExtractorLink): ExtractorLink {
+        if (link.javaClass != ExtractorLink::class.java || link.name.startsWith(name)) return link
+        return newExtractorLink(
+            source = link.source,
+            name = "$name \u00B7 ${link.name}",
+            url = link.url,
+            type = link.type
+        ) {
+            this.quality = link.quality
+            this.referer = link.referer
+            this.headers = link.headers
+            this.extractorData = link.extractorData
+        }
+    }
+
     protected suspend fun emitPlayer(
         url: String,
         referer: String,
@@ -570,9 +586,11 @@ abstract class TmdbProvider(
     ): Boolean {
         var emitted = false
         try {
-            loadExtractorWrapper(url, referer, subtitleCallback) {
+            val found = mutableListOf<ExtractorLink>()
+            loadExtractorWrapper(url, referer, subtitleCallback) { found.add(it) }
+            found.forEach {
                 emitted = true
-                callback(it)
+                callback(withProviderName(it))
             }
         } catch (e: Exception) {
             // ignore, caller can retry with a custom extractor
