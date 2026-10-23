@@ -25,8 +25,8 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 /**
- * Guardoserie: WordPress-like catalogue, Uqload players for recent titles and
- * legacy Loadm links (AES-128-CBC hex payloads).
+ * Guardoserie: WordPress-like catalogue, Uqload players, Abyss (mloadm) players
+ * and legacy Loadm links (AES-128-CBC hex payloads).
  */
 class GuardoserieProvider : TmdbProvider("Guardoserie", "https://guardoseries.cyou") {
     private val loadmKey = "kiemtienmua911ca"
@@ -113,6 +113,8 @@ class GuardoserieProvider : TmdbProvider("Guardoserie", "https://guardoseries.cy
                 emitted = extractUqload(url, pageUrl, callback) || emitted
             } else if (Regex("loadm\\.cam/?#", RegexOption.IGNORE_CASE).containsMatchIn(url)) {
                 emitted = extractLoadm(url, domain, callback) || emitted
+            } else if (Abyss.HOST_REGEX.containsMatchIn(url)) {
+                emitted = extractAbyss(url, pageUrl, callback) || emitted
             }
         }
         return emitted
@@ -412,6 +414,40 @@ class GuardoserieProvider : TmdbProvider("Guardoserie", "https://guardoseries.cy
             if (emitStream(url, headers, "Loadm", callback)) return true
         }
         return false
+    }
+
+    private suspend fun extractAbyss(
+        playerUrl: String,
+        pageUrl: String,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean {
+        val url = if (playerUrl.startsWith("//")) "https:$playerUrl" else playerUrl
+        val response = try {
+            net.get(url, headers = mapOf("User-Agent" to UA_MOBILE, "Referer" to pageUrl), timeout = 20)
+        } catch (e: Exception) {
+            return false
+        }
+        val host = Regex("^(https?://[^/]+)").find(response.url)?.groupValues?.get(1)
+            ?: Regex("^(https?://[^/]+)").find(url)?.groupValues?.get(1)
+            ?: return false
+        val sources = try {
+            Abyss.parse(response.text)
+        } catch (e: Exception) {
+            emptyList()
+        }
+        val headers = mapOf("User-Agent" to UA_MOBILE, "Referer" to "$host/", "Origin" to host)
+        for (source in sources) {
+            emit(
+                callback = callback,
+                url = source.url,
+                label = "Guardoserie Abyss ${if (source.quality > 0) "${source.quality}p" else "MP4"} \uD83C\uDDEE\uD83C\uDDF9",
+                quality = source.quality,
+                type = ExtractorLinkType.VIDEO,
+                referer = "$host/",
+                headers = headers
+            )
+        }
+        return sources.isNotEmpty()
     }
 
     private suspend fun emitStream(

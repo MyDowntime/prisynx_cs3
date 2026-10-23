@@ -4,6 +4,32 @@ Suite di plugin per **Nuvio** e **NuvioTV** per lo streaming in lingua italiana 
 
 ---
 
+## ☁️ CloudStream
+
+Repository da aggiungere in CloudStream (*Impostazioni → Estensioni → Aggiungi repository*):
+
+```
+https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/main.json
+```
+
+### 🧩 PriSynx (hub)
+Un'unica estensione che interroga in parallelo tutte le sorgenti (tranne RaiPlay, che resta separata) e mostra i link nell'ordine scelto.
+Dal pulsante ⚙️ dell'estensione (*Estensioni → PriSynx → impostazioni*) si apre un menu per:
+
+* **Provider**: attivare/disattivare ogni sorgente e cambiarne l'ordine (▲/▼). I link vengono inviati al player in quest'ordine.
+* **Cataloghi TMDB**: scegliere quali liste mostrare in home (Tendenze, Film/Serie popolari, Più votati, Al cinema, In arrivo, In onda).
+* **TopX**: mostrare/nascondere i cataloghi TopX (anche singolarmente), metterli prima o dopo quelli TMDB e cambiare l'URL del manifest TopX.
+
+Le 17 estensioni singole restano disponibili (ognuna con home e ricerca proprie).
+
+### ▶️ VidxGo
+Nuova sorgente (film e serie, basata su IMDb) con stream HLS fino a 4K. I token del CDN scadono dopo pochi minuti: l'estensione li rinnova automaticamente durante la riproduzione.
+
+### 🔧 Build
+I sorgenti Kotlin sono in questo branch (`shared/` + un modulo per provider). A ogni push su `main` la GitHub Action compila i `.cs3` e li pubblica nel branch `builds`, da cui CloudStream li scarica.
+
+---
+
 ## 📺 Provider Disponibili (14 Sorgenti)
 
 | Icona | Provider | Contenuti | Risoluzione & Formato | Audio / Sottotitoli | Note & Caratteristiche |
@@ -11,7 +37,7 @@ Suite di plugin per **Nuvio** e **NuvioTV** per lo streaming in lingua italiana 
 | ⚡ | **DualSync** | Film & Serie TV | 4K / 1080p · HLS | 🇮🇹 Audio ITA + 🌐 Originale | Video Cinejoy/Vidfast con mux audio ITA e AutoSync delay |
 | 🎬 | **MovyITA** | Film & Serie TV | 1080p · HLS | 🇮🇹 Audio ITA + 🌐 Originale | Flusso Movy con doppia traccia audio sincronizzata |
 | 🏰 | **Altadefinizione** | Film & Serie TV | 1080p / 720p · MP4 | 🇮🇹 Audio ITA | CDN MP4 diretta ad alta velocità |
-| 🎞️ | **Guardoserie** | Serie TV | 1080p / 720p · HLS / MP4 | 🇮🇹 Audio ITA + Sub-ITA | Player Uqload e Loadm |
+| 🎞️ | **Guardoserie** | Serie TV | 1080p / 720p · HLS / MP4 | 🇮🇹 Audio ITA + Sub-ITA | Player Uqload, Abyss (mloadm) e Loadm |
 | 📺 | **CB01** | Film & Serie TV | 1080p / 720p · MP4 / HLS | 🇮🇹 Audio ITA + Sub-ITA | Risoluzione dinamica probe MP4 su MixDrop |
 | 🍿 | **Eurostreaming** | Serie TV | 720p / 1080p · HLS / MP4 | 🇮🇹 Audio ITA + Sub-ITA | MixDrop, Turbovid, DeltaBit con captcha bypass automatico |
 | 💎 | **VixSrc** | Film & Serie TV | 1080p / 720p · HLS | 🇮🇹 Audio ITA + Multi-audio + Sub | Streaming HLS con selezione tracce audio e sub |
@@ -22,6 +48,7 @@ Suite di plugin per **Nuvio** e **NuvioTV** per lo streaming in lingua italiana 
 | 🌸 | **AnimeWorld** | Anime | 1080p / 720p · MP4 | 🇮🇹 Doppiato + 🇯🇵 SUB-ITA | Link MP4 diretti veloci con mapping automatico |
 | 🦊 | **AnimeSaturn** | Anime | 1080p / 720p · HLS / MP4 | 🇮🇹 Doppiato + 🇯🇵 SUB-ITA | StreamPeaker HLS/MP4 con mapping automatico |
 | 🏮 | **AnimeUnity** | Anime | 1080p / 720p · HLS | 🇮🇹 Doppiato + 🇯🇵 SUB-ITA | Server VixCloud con bitrate elevato (ITA e SUB) |
+| ▶️ | **VidxGo** | Film & Serie TV | 4K / 1080p · HLS | 🌐 Originale / Multi | Solo CloudStream · rinnovo automatico token |
 | 🏴‍☠️ | **IlCorsaroViola** | Film & Serie TV | 4K / 1080p · Torrent | 🇮🇹 Audio ITA + Multi | Torrent P2P con seeders, formati HEVC/H.264 e bitrate calcolato |
 
 ---
