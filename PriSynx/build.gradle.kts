@@ -29,3 +29,8 @@ cloudstream {
     language = "it"
     iconUrl = "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PriSynx.png"
 }
+
+dependencies {
+    // Stubs of the CloudStream app (android Plugin class with openSettings).
+    "cloudstream"("com.lagradost:cloudstream3:pre-release")
+}
