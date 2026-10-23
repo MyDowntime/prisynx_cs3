@@ -4,32 +4,6 @@ Suite di plugin per **Nuvio** e **NuvioTV** per lo streaming in lingua italiana 
 
 ---
 
-## ☁️ CloudStream
-
-Repository da aggiungere in CloudStream (*Impostazioni → Estensioni → Aggiungi repository*):
-
-```
-https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/main.json
-```
-
-### 🧩 PriSynx (hub)
-Un'unica estensione che interroga in parallelo tutte le sorgenti (tranne RaiPlay, che resta separata) e mostra i link nell'ordine scelto.
-Dal pulsante ⚙️ dell'estensione (*Estensioni → PriSynx → impostazioni*) si apre un menu per:
-
-* **Provider**: attivare/disattivare ogni sorgente e cambiarne l'ordine (▲/▼). I link vengono inviati al player in quest'ordine.
-* **Cataloghi TMDB**: scegliere quali liste mostrare in home (Tendenze, Film/Serie popolari, Più votati, Al cinema, In arrivo, In onda).
-* **TopX**: mostrare/nascondere i cataloghi TopX (anche singolarmente), metterli prima o dopo quelli TMDB e cambiare l'URL del manifest TopX.
-
-Le 17 estensioni singole restano disponibili (ognuna con home e ricerca proprie).
-
-### ▶️ VidxGo
-Nuova sorgente (film e serie, basata su IMDb) con stream HLS fino a 4K. I token del CDN scadono dopo pochi minuti: l'estensione li rinnova automaticamente durante la riproduzione.
-
-### 🔧 Build
-I sorgenti Kotlin sono in questo branch (`shared/` + un modulo per provider). A ogni push su `main` la GitHub Action compila i `.cs3` e li pubblica nel branch `builds`, da cui CloudStream li scarica.
-
----
-
 ## 📺 Provider Disponibili (14 Sorgenti)
 
 | Icona | Provider | Contenuti | Risoluzione & Formato | Audio / Sottotitoli | Note & Caratteristiche |
@@ -132,12 +106,29 @@ Questo repository ospita anche le estensioni native **CloudStream** (Kotlin `.cs
 Aggiungi questo URL nella sezione **Impostazioni → Estensioni → Aggiungi repository**:
 
 ```text
-https://raw.githubusercontent.com/qwertyuiop8899/PriSynx/main/main.json
+https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/main.json
 ```
 
 CloudStream scaricherà l'elenco plugin da `plugins.json`. Ogni provider è ora una **estensione separata**, aggiornabile e disattivabile singolarmente:
 
-`Altadefinizione`, `AnimeSaturn`, `AnimeUnity`, `AnimeWorld`, `CB01`, `IlCorsaroViola`, `DualSync`, `Eurostreaming`, `Filmez`, `Guardoserie`, `MovyITA`, `OnlineSerieTV`, `PaCC`, `RaiPlay`, `RealTime`, `Toonitalia`, `VixSrc`.
+`Altadefinizione`, `AnimeSaturn`, `AnimeUnity`, `AnimeWorld`, `CB01`, `IlCorsaroViola`, `DualSync`, `Eurostreaming`, `Filmez`, `Guardoserie`, `MovyITA`, `OnlineSerieTV`, `PaCC`, `RaiPlay`, `RealTime`, `Toonitalia`, `VidxGo`, `VixSrc`.
+
+### 🧩 PriSynx (hub con menu)
+
+L'estensione **PriSynx** raccoglie in un'unica sorgente tutti i provider (tranne RaiPlay, che resta separata): al click su un titolo interroga in parallelo le sorgenti attive e invia i link nell'ordine scelto.
+Dal pulsante ⚙️ dell'estensione (*Impostazioni → Estensioni → PriSynx*) si apre il menu:
+
+| Sezione | Cosa si può fare |
+| :--- | :--- |
+| **Provider** | Attivare/disattivare ogni sorgente e cambiarne l'ordine (▲/▼), pulsanti *Tutti* / *Nessuno* |
+| **Cataloghi TMDB** | Scegliere le liste in home: Tendenze, Film/Serie popolari, Film/Serie più votati (attive di default), Al cinema, In arrivo, Serie in onda |
+| **TopX** | Mostrare/nascondere tutti i cataloghi TopX o i singoli cataloghi, metterli prima/dopo quelli TMDB, cambiare l'URL del manifest TopX |
+
+Le estensioni singole restano installabili a parte (ognuna con home e ricerca proprie).
+
+### ▶️ VidxGo
+
+Sorgente basata su IMDb (film e serie) con stream HLS fino a 4K. I token del CDN scadono dopo pochi minuti: l'estensione li rinnova automaticamente durante la riproduzione.
 
 > ⚠️ **Geoblocking**: RaiPlay è disponibile solo da Italia/Europa. Fuori da queste aree il catalogo e i flussi HLS restituiscono errore/403.
 >
@@ -183,6 +174,8 @@ VixSrc/                       # un modulo = una estensione .cs3
     VixSrcProvider.kt         # home, search, load, loadLinks
 AnimeSaturn/ ... (idem per ogni provider)
 RaiPlay/
+PriSynx/                      # hub: copia in build i sorgenti degli altri moduli (senza i *Plugin.kt)
+  src/main/kotlin/prisynx/hub/  # PriSynxPlugin, PriSynxProvider, HubSettings(+Dialog), TopX
 .github/workflows/cloudstream-build.yml
 ```
 
