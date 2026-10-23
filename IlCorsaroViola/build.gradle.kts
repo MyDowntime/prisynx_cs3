@@ -2,7 +2,7 @@ android {
     sourceSets.getByName("main").java.srcDir(rootProject.file("shared/src/main/kotlin"))
 }
 
-version = 1
+version = 2
 
 cloudstream {
     description = "IlCorsaroViola: torrent P2P con seeders e formati 4K/1080p."

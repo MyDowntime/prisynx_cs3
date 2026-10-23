@@ -1,4 +1,4 @@
-version = 1
+version = 2
 
 cloudstream {
     description = "RaiPlay: film, serie TV, documentari e dirette Rai (catalogo ufficiale, senza DRM). Disponibile solo da Italia/Europa."

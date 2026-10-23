@@ -2,7 +2,7 @@ android {
     sourceSets.getByName("main").java.srcDir(rootProject.file("shared/src/main/kotlin"))
 }
 
-version = 1
+version = 2
 
 cloudstream {
     description = "Real Time: programmi e serie TV del canale Real Time."

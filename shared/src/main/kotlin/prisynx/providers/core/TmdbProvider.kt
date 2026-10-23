@@ -3,15 +3,24 @@ package prisynx.providers.core
 import android.util.Base64
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.lagradost.cloudstream3.Actor
+import com.lagradost.cloudstream3.ActorData
 import com.lagradost.cloudstream3.Episode
 import com.lagradost.cloudstream3.HomePageList
 import com.lagradost.cloudstream3.HomePageResponse
 import com.lagradost.cloudstream3.LoadResponse
+import com.lagradost.cloudstream3.LoadResponse.Companion.addImdbId
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTMDbId
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.MainAPI
 import com.lagradost.cloudstream3.MainPageRequest
+import com.lagradost.cloudstream3.NextAiring
+import com.lagradost.cloudstream3.Score
 import com.lagradost.cloudstream3.SearchResponse
+import com.lagradost.cloudstream3.ShowStatus
 import com.lagradost.cloudstream3.SubtitleFile
 import com.lagradost.cloudstream3.TvType
+import com.lagradost.cloudstream3.addDate
 import com.lagradost.cloudstream3.newEpisode
 import com.lagradost.cloudstream3.newHomePageResponse
 import com.lagradost.cloudstream3.newMovieLoadResponse
@@ -33,6 +42,8 @@ const val TMDB_API = "https://api.themoviedb.org/3"
 const val TMDB_KEY = "68e094699525b18a70bab2f86b1fa706"
 const val IMG_500 = "https://image.tmdb.org/t/p/w500"
 const val IMG_780 = "https://image.tmdb.org/t/p/w780"
+const val IMG_1280 = "https://image.tmdb.org/t/p/w1280"
+const val IMG_185 = "https://image.tmdb.org/t/p/w185"
 
 const val UA_PC =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
@@ -173,6 +184,86 @@ abstract class TmdbProvider(
         )
     )
 
+    /** Details plus cast, trailers, recommendations, logos and age ratings for the info page. */
+    suspend fun fetchFullDetails(ref: MediaRef): JsonNode? = fetchJson(
+        tmdbUrl(
+            if (ref.isTv) "tv/${ref.id}" else "movie/${ref.id}",
+            "append_to_response=external_ids,videos,recommendations,images," +
+                (if (ref.isTv) "aggregate_credits,content_ratings" else "credits,release_dates") +
+                "&include_video_language=it,en&include_image_language=it,en,null"
+        )
+    )
+
+    private fun actorsOf(d: JsonNode, isTv: Boolean): List<ActorData> {
+        val cast = if (isTv) d.path("aggregate_credits").path("cast") else d.path("credits").path("cast")
+        return cast.take(25).mapNotNull { node ->
+            val name = node.path("name").asText("").ifBlank { return@mapNotNull null }
+            val profile = node.path("profile_path").asText("")
+            val role = if (isTv) {
+                node.path("roles").firstOrNull()?.path("character")?.asText("")
+            } else {
+                node.path("character").asText("")
+            }
+            ActorData(
+                actor = Actor(name, profile.takeIf { it.isNotBlank() }?.let { IMG_185 + it }),
+                roleString = role?.ifBlank { null }
+            )
+        }
+    }
+
+    private fun trailersOf(d: JsonNode): List<String> =
+        d.path("videos").path("results")
+            .filter { it.path("site").asText("") == "YouTube" && it.path("key").asText("").isNotBlank() }
+            .filter { it.path("type").asText("") in setOf("Trailer", "Teaser") }
+            .sortedWith(
+                compareBy(
+                    { if (it.path("iso_639_1").asText("") == "it") 0 else 1 },
+                    { if (it.path("type").asText("") == "Trailer") 0 else 1 },
+                    { if (it.path("official").asBoolean(false)) 0 else 1 }
+                )
+            )
+            .map { "https://www.youtube.com/watch?v=" + it.path("key").asText("") }
+            .distinct()
+            .take(4)
+
+    private fun logoOf(d: JsonNode): String? {
+        val logos = d.path("images").path("logos").toList()
+        val pick = logos.firstOrNull { it.path("iso_639_1").asText("") == "it" }
+            ?: logos.firstOrNull { it.path("iso_639_1").asText("") == "en" }
+            ?: logos.firstOrNull()
+        return pick?.path("file_path")?.asText("")?.takeIf { it.isNotBlank() }?.let { IMG_500 + it }
+    }
+
+    private fun contentRatingOf(d: JsonNode, isTv: Boolean): String? {
+        fun pick(country: String): String? = if (isTv) {
+            d.path("content_ratings").path("results")
+                .firstOrNull { it.path("iso_3166_1").asText("") == country }
+                ?.path("rating")?.asText("")?.ifBlank { null }
+        } else {
+            d.path("release_dates").path("results")
+                .firstOrNull { it.path("iso_3166_1").asText("") == country }
+                ?.path("release_dates")
+                ?.map { it.path("certification").asText("") }
+                ?.firstOrNull { it.isNotBlank() }
+        }
+        return pick("IT") ?: pick("US")
+    }
+
+    private fun recommendationsOf(d: JsonNode, isTv: Boolean): List<SearchResponse> =
+        d.path("recommendations").path("results").take(20).mapNotNull { cardOf(it, isTv) }
+
+    private fun scoreOf(node: JsonNode): Score? =
+        node.path("vote_average").asDouble(0.0).takeIf { it > 0 }?.let { Score.from10(it) }
+
+    /** Italian overview is often missing: fall back to the English one. */
+    private suspend fun plotOf(ref: MediaRef, meta: MediaMeta): String? = meta.plot ?: try {
+        fetchJson(
+            "$TMDB_API/${if (ref.isTv) "tv" else "movie"}/${ref.id}?api_key=$TMDB_KEY&language=en-US"
+        )?.path("overview")?.asText("")?.ifBlank { null }
+    } catch (e: Exception) {
+        null
+    }
+
     suspend fun toMeta(ref: MediaRef, details: JsonNode? = null): MediaMeta {
         val d = details ?: fetchDetails(ref) ?: return MediaMeta()
         val title = if (ref.isTv) d.path("name").asText("") else d.path("title").asText("")
@@ -312,19 +403,33 @@ abstract class TmdbProvider(
     override suspend fun load(url: String): LoadResponse {
         val ref = MediaRef.parse(url)
             ?: throw com.lagradost.cloudstream3.ErrorLoadingException("Riferimento non valido")
-        val details = fetchDetails(ref)
+        val details = fetchFullDetails(ref) ?: fetchDetails(ref)
             ?: throw com.lagradost.cloudstream3.ErrorLoadingException("Titolo non trovato")
         val meta = toMeta(ref, details)
         val title = meta.title.ifBlank { meta.originalTitle }
+        val fullPlot = plotOf(ref, meta)
+        val background = details.path("backdrop_path").asText("")
+            .takeIf { it.isNotBlank() }?.let { IMG_1280 + it } ?: meta.backgroundUrl
+        val tagline = details.path("tagline").asText("").ifBlank { null }
+        val plotText = listOfNotNull(tagline?.let { "\u201C$it\u201D" }, fullPlot)
+            .joinToString("\n\n").ifBlank { null }
 
         if (!ref.isTv) {
             return newMovieLoadResponse(title, url, TvType.Movie, ref.asData()) {
                 posterUrl = meta.posterUrl
-                backgroundPosterUrl = meta.backgroundUrl
-                plot = meta.plot
+                backgroundPosterUrl = background
+                logoUrl = logoOf(details)
+                plot = plotText
                 year = meta.year
                 tags = meta.genres
                 duration = meta.runtime
+                score = scoreOf(details)
+                contentRating = contentRatingOf(details, false)
+                actors = actorsOf(details, false)
+                recommendations = recommendationsOf(details, false)
+                addTrailer(trailersOf(details))
+                addImdbId(meta.imdbId)
+                addTMDbId(ref.id.toString())
             }
         }
 
@@ -361,6 +466,8 @@ abstract class TmdbProvider(
                             description = ep.path("overview").asText("").ifBlank { null }
                             posterUrl = still.takeIf { it.isNotBlank() }?.let { IMG_500 + it }
                             runTime = ep.path("runtime").asInt(0).takeIf { it > 0 }
+                            score = scoreOf(ep)
+                            ep.path("air_date").asText("").takeIf { it.isNotBlank() }?.let { addDate(it) }
                         },
                         fix = false
                     )
@@ -368,12 +475,40 @@ abstract class TmdbProvider(
             }
         }
 
+        val next = details.path("next_episode_to_air")
+        val nextAiringData = run {
+            val date = next.path("air_date").asText("")
+            val ep = next.path("episode_number").asInt(0)
+            if (date.isBlank() || ep <= 0) return@run null
+            val millis = try {
+                java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).parse(date)?.time
+            } catch (e: Exception) {
+                null
+            } ?: return@run null
+            NextAiring(ep, millis / 1000, next.path("season_number").asInt(0).takeIf { it > 0 })
+        }
+
         return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
             posterUrl = meta.posterUrl
-            backgroundPosterUrl = meta.backgroundUrl
-            plot = meta.plot
+            backgroundPosterUrl = background
+            logoUrl = logoOf(details)
+            plot = plotText
             year = meta.year
             tags = meta.genres
+            duration = meta.runtime
+            score = scoreOf(details)
+            contentRating = contentRatingOf(details, true)
+            actors = actorsOf(details, true)
+            recommendations = recommendationsOf(details, true)
+            showStatus = when (details.path("status").asText("")) {
+                "Ended", "Canceled" -> ShowStatus.Completed
+                "Returning Series", "In Production", "Planned", "Pilot" -> ShowStatus.Ongoing
+                else -> null
+            }
+            nextAiring = nextAiringData
+            addTrailer(trailersOf(details))
+            addImdbId(meta.imdbId)
+            addTMDbId(ref.id.toString())
         }
     }
 
