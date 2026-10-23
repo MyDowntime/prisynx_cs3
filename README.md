@@ -103,15 +103,17 @@ Questo repository ospita anche le estensioni native **CloudStream** (Kotlin `.cs
 
 ### Installazione in CloudStream
 
-Aggiungi questo URL nella sezione **Impostazioni → Estensioni → Aggiungi repository**:
+In CloudStream: **Impostazioni → Estensioni → Aggiungi repository** e incolla **uno** di questi URL:
 
-```text
-https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/main.json
-```
+| Repository | URL | Cosa contiene |
+| :--- | :--- | :--- |
+| 🧩 **PriSynx Center** (consigliato) | `https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/center.json` | L'estensione **PriSynx** con tutti i provider e il menu ⚙️, più **RaiPlay** (separata) |
+| 🔌 **Provider singoli** | `https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/singoli.json` | Un'estensione per provider, attivabili/aggiornabili una per una (niente menu) |
 
-CloudStream scaricherà l'elenco plugin da `plugins.json`. Ogni provider è ora una **estensione separata**, aggiornabile e disattivabile singolarmente:
+Il vecchio URL `.../main/main.json` resta valido e mostra tutte le estensioni insieme.
+Non installare insieme PriSynx e i provider singoli: avresti i link doppi.
 
-`Altadefinizione`, `AnimeSaturn`, `AnimeUnity`, `AnimeWorld`, `CB01`, `IlCorsaroViola`, `DualSync`, `Eurostreaming`, `Filmez`, `Guardoserie`, `MovyITA`, `OnlineSerieTV`, `PaCC`, `RaiPlay`, `RealTime`, `Toonitalia`, `VidxGo`, `VixSrc`.
+Provider singoli disponibili: `Altadefinizione`, `AnimeSaturn`, `AnimeUnity`, `AnimeWorld`, `CB01`, `IlCorsaroViola`, `DualSync`, `Eurostreaming`, `Filmez`, `Guardoserie`, `MovyITA`, `OnlineSerieTV`, `PaCC`, `RaiPlay`, `RealTime`, `Toonitalia`, `VidxGo`, `VixSrc`.
 
 ### 🧩 PriSynx (hub con menu)
 
@@ -123,8 +125,31 @@ Dal pulsante ⚙️ dell'estensione (*Impostazioni → Estensioni → PriSynx*) 
 | **Provider** | Attivare/disattivare ogni sorgente e cambiarne l'ordine (▲/▼), pulsanti *Tutti* / *Nessuno* |
 | **Cataloghi TMDB** | Scegliere le liste in home: Tendenze, Film/Serie popolari, Film/Serie più votati (attive di default), Al cinema, In arrivo, Serie in onda |
 | **TopX** | Mostrare/nascondere tutti i cataloghi TopX o i singoli cataloghi, metterli prima/dopo quelli TMDB, cambiare l'URL del manifest TopX |
+| **IlCorsaroViola** | Numero massimo di torrent (default 3): prima il 4K e il Full HD con più seed, poi i più seedati |
 
 Le estensioni singole restano installabili a parte (ognuna con home e ricerca proprie).
+
+### 🎧 Movy, Cinejoy e VidFast con audio ITA (MovyITA / DualSync)
+
+| Estensione | Video | Audio italiano |
+| :--- | :--- | :--- |
+| **MovyITA** | player Movy (file VidFast, server miami/boise/…): 4K / 1080p / 720p | traccia VixSrc |
+| **DualSync** | Cinejoy: 4K / 1080p | traccia VixSrc |
+
+Per ogni qualità compaiono due link:
+
+- **`… ITA <badge>`**: video originale + audio italiano VixSrc (e sottotitoli VixSrc) in un unico flusso. Se l'offset è misurato viene **applicato in automatico**: niente da regolare.
+- **`… solo video`**: il solo video con l'audio originale, utile se il link ITA non parte o se usi un player esterno.
+
+Come scegliere:
+
+1. `🔊✅ in sync` o `⏱️ ±X s auto` → avvia questo: l'audio è già allineato.
+2. `⏳ da misurare` / `⏳ N° in coda` / `⚙️ in calcolo` / `🔬 analisi approfondita` → l'offset non è ancora noto: la misura è stata chiesta ad AutoSync. Riapri il titolo dopo qualche minuto. Nel frattempo il link ITA parte **senza** correzione.
+3. `⛔ tagli` / `⛔ versioni diverse` / `⛔ 23,976↔25 fps` → video e audio sono edizioni diverse: non sincronizzabile, usa `solo video` o un altro provider.
+4. `⚠️ ±X s · player esterno` → offset oltre 60 s: usa `solo video` in un player esterno (VLC/MX/Just) impostando a mano il ritardo audio indicato.
+
+Le misure sono **per player**: Movy usa solo le misure Movy/VidFast, DualSync solo quelle Cinejoy (file con durata uguale possono partire in punti diversi).
+Positivo = audio italiano ritardato, negativo = anticipato. Se il link ITA non va, prova un altro server/qualità o il `solo video`.
 
 ### ▶️ VidxGo
 
@@ -179,10 +204,30 @@ PriSynx/                      # hub: copia in build i sorgenti degli altri modul
 .github/workflows/cloudstream-build.yml
 ```
 
-Build locale (richiede **JDK 17** e **Android SDK**):
+#### Build automatica (GitHub Actions)
+
+Basta modificare i sorgenti su `main` (anche dall'editor web di GitHub) e fare commit:
+
+1. Modifica il provider in `<Provider>/src/main/kotlin/...` oppure il codice comune in `shared/`.
+2. **Alza `version`** nel `build.gradle.kts` del modulo modificato, altrimenti CloudStream non propone l'aggiornamento. Se tocchi `shared/` alza la versione dei moduli che usano il codice cambiato; se tocchi un provider alza anche `PriSynx/build.gradle.kts` (l'hub include i sorgenti di tutti i provider).
+3. Commit/push su `main` → il workflow **CloudStream build** (tab *Actions*, ~5 minuti) compila e pubblica sul branch `builds`: `*.cs3`, `plugins.json` (tutti), `plugins-center.json` (PriSynx + RaiPlay), `plugins-singoli.json` (provider singoli).
+4. In CloudStream: *Impostazioni → Estensioni* → aggiorna.
+
+Il workflow si può avviare anche a mano da *Actions → CloudStream build → Run workflow*. Se fallisce, il log del passo *Build plugins* mostra l'errore Kotlin (`e: file…:riga`).
+
+#### Nuovo provider
+
+Copia una cartella esistente (es. `VixSrc/`), rinomina `*Plugin.kt` / `*Provider.kt` e classi, imposta `version = 1` e la `description` nel `build.gradle.kts`: `settings.gradle.kts` include da solo ogni cartella con `build.gradle.kts`. Per averlo anche nell'hub aggiungilo a `HubSettings.sources` in `PriSynx/src/main/kotlin/prisynx/hub/HubSettings.kt`.
+
+#### Build locale
+
+Richiede **JDK 17** e **Android SDK**:
 
 ```bash
-./gradlew make makePluginsJson ensureJarCompatibility
+./gradlew make makePluginsJson ensureJarCompatibility   # tutti i moduli
+./gradlew :MovyITA:make                                 # un solo modulo
 ```
+
+I file `.cs3` finiscono in `<Modulo>/build/`.
 
 Il workflow GitHub Actions compila a ogni push su `main` e pubblica `*.cs3`, `*.jar` e `plugins.json` sul branch `builds`.

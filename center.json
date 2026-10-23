@@ -1,0 +1,8 @@
+{
+  "name": "PriSynx Center",
+  "description": "PriSynx Center: un'unica estensione con tutti i provider e il menu ⚙️ (provider on/off e ordine, cataloghi TMDB, TopX, max risultati torrent). Include anche RaiPlay, che resta separata.",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/builds/plugins-center.json"
+  ]
+}

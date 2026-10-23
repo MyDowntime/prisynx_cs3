@@ -1,0 +1,8 @@
+{
+  "name": "PriSynx Provider singoli",
+  "description": "PriSynx: ogni provider come estensione separata (VixSrc, VidxGo, PaCC, Guardoserie, Altadefinizione, RealTime, Toonitalia, IlCorsaroViola, AnimeUnity, AnimeSaturn, AnimeWorld, Filmez, OnlineSerieTV, CB01, Eurostreaming, MovyITA, DualSync, RaiPlay).",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/builds/plugins-singoli.json"
+  ]
+}

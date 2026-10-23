@@ -15,6 +15,8 @@ on:
       - "gradlew"
       - "gradlew.bat"
       - ".github/workflows/cloudstream-build.yml"
+      - "center.json"
+      - "singoli.json"
 
 permissions:
   contents: write
@@ -49,6 +51,14 @@ jobs:
           cp **/build/*.cs3 ../out/
           cp **/build/*.jar ../out/ || true
           cp build/plugins.json ../out/
+          python3 - <<'PY'
+          import json
+          plugins = json.load(open("../out/plugins.json"))
+          center = [p for p in plugins if p["internalName"] in ("PriSynx", "RaiPlay")]
+          single = [p for p in plugins if p["internalName"] != "PriSynx"]
+          json.dump(center, open("../out/plugins-center.json", "w"), indent=2, ensure_ascii=False)
+          json.dump(single, open("../out/plugins-singoli.json", "w"), indent=2, ensure_ascii=False)
+          PY
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
