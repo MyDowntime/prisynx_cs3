@@ -1,336 +1,698 @@
 package prisynx.hub
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
+import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CompoundButton
+import android.view.WindowManager
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.ScrollView
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.coroutines.runBlocking
 
 /**
- * StreamCenter-like settings screen, built in code (no resources needed):
- * collapsible sections for sources (on/off + order), TMDB rows and TopX rows.
+ * Full screen settings for the PriSynx hub, designed for the D-pad:
+ * a tab bar on top, big focusable rows (click = toggle) and a clear
+ * focus highlight. Plain Android widgets only (the plugin has no AppCompat).
  */
-@Suppress("SetTextI18n", "UseSwitchCompatOrMaterialCode")
+@Suppress("SetTextI18n")
 object HubSettingsDialog {
-    private const val BG = 0xFF15171C.toInt()
-    private const val CARD = 0xFF1F232B.toInt()
-    private const val ACCENT = 0xFF3D8BFF.toInt()
-    private const val TEXT = 0xFFECEFF4.toInt()
-    private const val SUB = 0xFF9AA3B2.toInt()
+    private const val BG = 0xFF120D1C.toInt()
+    private const val BAR = 0xFF1A1229.toInt()
+    private const val CARD = 0xFF211833.toInt()
+    private const val CARD_FOCUS = 0xFF3B2566.toInt()
+    private const val ACCENT = 0xFF9B5CFF.toInt()
+    private const val ACCENT_SOFT = 0xFF2E2050.toInt()
+    private const val TEXT = 0xFFF3EEFF.toInt()
+    private const val SUB = 0xFFAFA2C9.toInt()
+    private const val ON = 0xFF8B5CF6.toInt()
+    private const val OFF = 0xFF3A3347.toInt()
+
+    private val tabs = listOf("Provider", "Home", "TopX", "RaiPlay", "Altro")
+
+    private class Ui(val context: Context, val content: LinearLayout, val scroll: ScrollView) {
+        val tabViews = mutableListOf<TextView>()
+        var current = -1
+        var generation = 0
+        val main = Handler(Looper.getMainLooper())
+    }
 
     fun show(context: Context) {
-        HubSettings.init(context)
+        val dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         val root = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(BG)
-            setPadding(dp(context, 16), dp(context, 12), dp(context, 16), dp(context, 12))
         }
-        root.addView(title(context, "PriSynx", 22f))
-        root.addView(note(context, "Le modifiche vengono salvate subito. Ricarica la home per vedere i cataloghi aggiornati."))
 
-        root.addView(section(context, "Provider", "Accendi/spegni e ordina le sorgenti: l'ordine è la priorità nella lista stream.", true) {
-            sourcesSection(context, it)
-        })
-        root.addView(section(context, "Cataloghi TMDB", "Liste della home basate su TMDB. La ricerca usa sempre TMDB.", false) {
-            tmdbSection(context, it)
-        })
-        root.addView(section(context, "TopX", "Classifiche Top 10 dei servizi di streaming (addon Stremio TopX).", false) {
-            topxSection(context, it)
-        })
-
-        val reset = button(context, "Ripristina impostazioni predefinite") {
-            HubSettings.resetAll()
-            TopX.clearCache()
-            toast(context, "Impostazioni ripristinate: riapri il menu")
-        }
-        root.addView(reset, matchWrap().apply { topMargin = dp(context, 16) })
-
-        val scroll = ScrollView(context).apply {
-            setBackgroundColor(BG)
-            addView(root)
-        }
-        AlertDialog.Builder(context)
-            .setView(scroll)
-            .setPositiveButton("Chiudi", null)
-            .show()
-            .window?.setBackgroundDrawable(GradientDrawable().apply { setColor(BG); cornerRadius = dp(context, 12).toFloat() })
-    }
-
-    // ------------------------------------------------------------ sections
-
-    private fun sourcesSection(context: Context, body: LinearLayout) {
-        body.removeAllViews()
-        val order = HubSettings.orderedSources().toMutableList()
-        order.forEachIndexed { index, source ->
-            val row = LinearLayout(context).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setPadding(0, dp(context, 2), 0, dp(context, 2))
-            }
-            val position = TextView(context).apply {
-                text = "${index + 1}."
-                setTextColor(SUB)
-                minWidth = dp(context, 28)
-            }
-            val sw = switch(context, source.label, HubSettings.isSourceEnabled(source.id)) { _, on ->
-                HubSettings.setSourceEnabled(source.id, on)
-            }
-            val up = arrow(context, "▲", index > 0) {
-                order.add(index - 1, order.removeAt(index))
-                HubSettings.saveOrder(order)
-                sourcesSection(context, body)
-            }
-            val down = arrow(context, "▼", index < order.lastIndex) {
-                order.add(index + 1, order.removeAt(index))
-                HubSettings.saveOrder(order)
-                sourcesSection(context, body)
-            }
-            row.addView(position)
-            row.addView(sw, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-            row.addView(up)
-            row.addView(down)
-            body.addView(row)
-        }
-        val bulk = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-        bulk.addView(button(context, "Tutti") {
-            HubSettings.sources.forEach { HubSettings.setSourceEnabled(it.id, true) }
-            sourcesSection(context, body)
-        }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        bulk.addView(button(context, "Nessuno") {
-            HubSettings.sources.forEach { HubSettings.setSourceEnabled(it.id, false) }
-            sourcesSection(context, body)
-        }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        body.addView(bulk)
-
-        val torrents = LinearLayout(context).apply {
+        // header
+        val header = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, dp(context, 8), 0, dp(context, 2))
+            setBackgroundColor(BAR)
+            setPadding(dp(context, 24), dp(context, 14), dp(context, 24), dp(context, 6))
         }
-        val count = TextView(context).apply {
-            text = "IlCorsaroViola: max ${HubSettings.torrentMax} risultati"
+        header.addView(TextView(context).apply {
+            text = "PriSynx"
+            setTextColor(ACCENT)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
+            typeface = Typeface.DEFAULT_BOLD
+        })
+        header.addView(TextView(context).apply {
+            text = "  Impostazioni"
             setTextColor(TEXT)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
-        }
-        val minus = arrow(context, "\u2212", HubSettings.torrentMax > 1) {
-            HubSettings.torrentMax = HubSettings.torrentMax - 1
-            sourcesSection(context, body)
-        }
-        val plus = arrow(context, "+", HubSettings.torrentMax < 20) {
-            HubSettings.torrentMax = HubSettings.torrentMax + 1
-            sourcesSection(context, body)
-        }
-        torrents.addView(count, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        torrents.addView(minus)
-        torrents.addView(plus)
-        body.addView(torrents)
-        body.addView(note(context, "Prima il 4K e il Full HD con più seed (se presenti), poi i più seedati."))
-    }
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+        }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        val close = pill(context, "✕  Chiudi") { dialog.dismiss() }
+        header.addView(close)
+        root.addView(header)
 
-    private fun tmdbSection(context: Context, body: LinearLayout) {
-        HubSettings.tmdbRows.forEach { row ->
-            body.addView(switch(context, row.row.name, HubSettings.isTmdbRowEnabled(row)) { _, on ->
-                HubSettings.setTmdbRowEnabled(row, on)
+        // tab bar
+        val tabRow = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(dp(context, 20), dp(context, 6), dp(context, 20), dp(context, 12))
+        }
+        val tabScroll = HorizontalScrollView(context).apply {
+            isHorizontalScrollBarEnabled = false
+            setBackgroundColor(BAR)
+            addView(tabRow)
+        }
+        root.addView(tabScroll, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+
+        // content
+        val content = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(context, 24), dp(context, 16), dp(context, 24), dp(context, 32))
+        }
+        val scroll = ScrollView(context).apply {
+            isFillViewport = true
+            addView(content)
+        }
+        root.addView(scroll, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
+
+        root.addView(TextView(context).apply {
+            text = "OK/Invio = attiva o disattiva  ·  ▲ ▼ = sposta  ·  Indietro = chiudi  ·  le modifiche sono salvate subito (ricarica la home per vederle)"
+            setTextColor(SUB)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            setBackgroundColor(BAR)
+            setPadding(dp(context, 24), dp(context, 8), dp(context, 24), dp(context, 8))
+        })
+
+        val ui = Ui(context, content, scroll)
+        tabs.forEachIndexed { index, name ->
+            val tab = TextView(context).apply {
+                text = name
+                setTextColor(TEXT)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                minWidth = dp(context, 110)
+                setPadding(dp(context, 22), dp(context, 10), dp(context, 22), dp(context, 10))
+                isFocusable = true
+                isClickable = true
+                background = tabBackground(context)
+                id = View.generateViewId()
+                setOnClickListener { select(ui, index) }
+                setOnFocusChangeListener { _, focused -> if (focused) select(ui, index) }
+            }
+            ui.tabViews.add(tab)
+            tabRow.addView(tab, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                rightMargin = dp(context, 10)
             })
         }
+        close.nextFocusDownId = ui.tabViews.first().id
+        ui.tabViews.forEach { it.nextFocusUpId = close.id.takeIf { id -> id != View.NO_ID } ?: View.NO_ID }
+
+        dialog.setContentView(root)
+        dialog.window?.apply {
+            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            setBackgroundDrawable(GradientDrawable().apply { setColor(BG) })
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        }
+        select(ui, 0)
+        dialog.show()
+        ui.tabViews.first().post { ui.tabViews.first().requestFocus() }
     }
 
-    private fun topxSection(context: Context, body: LinearLayout) {
-        body.addView(switch(context, "Mostra cataloghi TopX", HubSettings.topxEnabled) { _, on ->
-            HubSettings.topxEnabled = on
-        })
-        body.addView(switch(context, "TopX prima dei cataloghi TMDB", HubSettings.topxFirst) { _, on ->
-            HubSettings.topxFirst = on
-        })
-        body.addView(note(context, "URL manifest TopX (configurabile su topx.stremio-italia.eu)"))
-        val input = EditText(context).apply {
+    // ------------------------------------------------------------ tabs
+
+    private fun select(ui: Ui, index: Int, force: Boolean = false) {
+        if (ui.current == index && !force) return
+        ui.current = index
+        ui.generation++
+        ui.tabViews.forEachIndexed { i, t -> t.isSelected = i == index }
+        ui.content.removeAllViews()
+        when (index) {
+            0 -> providerTab(ui)
+            1 -> homeTab(ui)
+            2 -> topxTab(ui)
+            3 -> raiTab(ui)
+            else -> otherTab(ui)
+        }
+        ui.scroll.scrollTo(0, 0)
+        linkTabsToContent(ui)
+    }
+
+    /** Rebuilds the page, keeping the scroll and focusing the first focusable of [focusTags]. */
+    private fun refresh(ui: Ui, vararg focusTags: String) {
+        val y = ui.scroll.scrollY
+        select(ui, ui.current, force = true)
+        ui.scroll.post {
+            ui.scroll.scrollTo(0, y)
+            focusTags.asSequence()
+                .mapNotNull { ui.content.findViewWithTag<View>(it) }
+                .firstOrNull { it.isFocusable }
+                ?.requestFocus()
+        }
+    }
+
+    /** D-pad down from the tab bar lands on the first row of the page. */
+    private fun linkTabsToContent(ui: Ui) {
+        val first = firstFocusable(ui.content) ?: return
+        if (first.id == View.NO_ID) first.id = View.generateViewId()
+        ui.tabViews.forEach { it.nextFocusDownId = first.id }
+        first.nextFocusUpId = ui.tabViews[ui.current].id
+    }
+
+    private fun firstFocusable(group: ViewGroup): View? {
+        for (i in 0 until group.childCount) {
+            val child = group.getChildAt(i)
+            if (child.isFocusable && child.visibility == View.VISIBLE) return child
+            if (child is ViewGroup) firstFocusable(child)?.let { return it }
+        }
+        return null
+    }
+
+    // ------------------------------------------------------------ Provider
+
+    private fun providerTab(ui: Ui) {
+        val c = ui.context
+        heading(ui, "Provider", "Attiva/disattiva con OK. Usa ▲ ▼ per l'ordine: i link arrivano in quest'ordine.")
+        val bulk = LinearLayout(c).apply { orientation = LinearLayout.HORIZONTAL }
+        bulk.addView(actionRow(c, "Attiva tutti", null) {
+            HubSettings.sources.forEach { HubSettings.setSourceEnabled(it.id, true) }
+            refresh(ui, "bulk_all")
+        }.apply { tag = "bulk_all" }, weightParams(c, right = 8))
+        bulk.addView(actionRow(c, "Disattiva tutti", null) {
+            HubSettings.sources.forEach { HubSettings.setSourceEnabled(it.id, false) }
+            refresh(ui, "bulk_none")
+        }.apply { tag = "bulk_none" }, weightParams(c, left = 8))
+        ui.content.addView(bulk, rowParams(c))
+
+        val order = HubSettings.orderedSources()
+        order.forEachIndexed { index, source ->
+            ui.content.addView(orderRow(
+                ui,
+                tagPrefix = source.id,
+                title = "${index + 1}.  ${source.label}",
+                on = { HubSettings.isSourceEnabled(source.id) },
+                toggle = { HubSettings.setSourceEnabled(source.id, !HubSettings.isSourceEnabled(source.id)) },
+                canUp = index > 0,
+                canDown = index < order.lastIndex,
+                move = { delta ->
+                    val list = HubSettings.orderedSources().toMutableList()
+                    val from = list.indexOfFirst { it.id == source.id }
+                    val to = from + delta
+                    if (from >= 0 && to in list.indices) {
+                        list.add(to, list.removeAt(from))
+                        HubSettings.saveOrder(list)
+                    }
+                }
+            ), rowParams(c))
+        }
+    }
+
+    // ------------------------------------------------------------ Home
+
+    private fun homeTab(ui: Ui) {
+        val c = ui.context
+        heading(ui, "Ordine delle sezioni", "Cosa compare per primo nella home di PriSynx.")
+        val order = HubSettings.homeOrder()
+        val labels = HubSettings.homeGroups.toMap()
+        order.forEachIndexed { index, id ->
+            ui.content.addView(orderRow(
+                ui,
+                tagPrefix = "group_$id",
+                title = "${index + 1}.  ${labels[id] ?: id}",
+                on = null,
+                toggle = null,
+                canUp = index > 0,
+                canDown = index < order.lastIndex,
+                move = { delta ->
+                    val list = HubSettings.homeOrder().toMutableList()
+                    val from = list.indexOf(id)
+                    val to = from + delta
+                    if (from >= 0 && to in list.indices) {
+                        list.add(to, list.removeAt(from))
+                        HubSettings.saveHomeOrder(list)
+                    }
+                }
+            ), rowParams(c))
+        }
+
+        heading(ui, "Cataloghi TMDB", "Righe della home basate su TMDB.")
+        HubSettings.tmdbRows.forEach { row ->
+            ui.content.addView(toggleRow(c, row.row.name, null,
+                get = { HubSettings.isTmdbRowEnabled(row) },
+                set = { HubSettings.setTmdbRowEnabled(row, it) }
+            ), rowParams(c))
+        }
+    }
+
+    // ------------------------------------------------------------ TopX
+
+    private fun topxTab(ui: Ui) {
+        val c = ui.context
+        heading(ui, "TopX", "Cataloghi da topx.stremio-italia.eu")
+        ui.content.addView(toggleRow(c, "Mostra cataloghi TopX", null,
+            get = { HubSettings.topxEnabled },
+            set = { HubSettings.topxEnabled = it }
+        ), rowParams(c))
+        val url = HubSettings.topxUrl
+        val custom = url != HubSettings.DEFAULT_TOPX_URL
+        ui.content.addView(actionRow(c, "Modifica URL manifest",
+            if (custom) "Personalizzato: ${shorten(url)}" else "Predefinito PriSynx") {
+            editUrl(ui)
+        }, rowParams(c))
+        if (custom) {
+            ui.content.addView(actionRow(c, "Ripristina URL predefinito", null) {
+                HubSettings.topxUrl = HubSettings.DEFAULT_TOPX_URL
+                TopX.clearCache()
+                refresh(ui)
+            }, rowParams(c))
+        }
+        ui.content.addView(actionRow(c, "Ricarica elenco cataloghi", null) {
+            TopX.clearCache()
+            refresh(ui)
+        }, rowParams(c))
+
+        heading(ui, "Cataloghi", null)
+        asyncList(ui,
+            load = { runBlocking { TopX.catalogs(HubSettings.topxUrl) }.map { it.key to it.label } },
+            isOn = { HubSettings.isTopxCatalogEnabled(it) },
+            setOn = { key, on -> HubSettings.setTopxCatalogEnabled(key, on) },
+            empty = "Nessun catalogo trovato: controlla l'URL o la connessione."
+        )
+    }
+
+    private fun editUrl(ui: Ui) {
+        val c = ui.context
+        val input = EditText(c).apply {
             setText(HubSettings.topxUrl)
-            setTextColor(TEXT)
-            setHintTextColor(SUB)
-            hint = "https://…/manifest.json"
             setSingleLine(true)
             inputType = InputType.TYPE_TEXT_VARIATION_URI
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            setSelectAllOnFocus(true)
         }
-        body.addView(input, matchWrap())
-        val list = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
-
-        val actions = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-        actions.addView(button(context, "Salva URL e ricarica") {
-            HubSettings.topxUrl = input.text.toString().ifBlank { HubSettings.DEFAULT_TOPX_URL }
-            TopX.clearCache()
-            loadTopxCatalogs(context, list, force = true)
-        }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        actions.addView(button(context, "URL predefinito") {
-            input.setText(HubSettings.DEFAULT_TOPX_URL)
-            HubSettings.topxUrl = HubSettings.DEFAULT_TOPX_URL
-            TopX.clearCache()
-            loadTopxCatalogs(context, list, force = true)
-        }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        body.addView(actions)
-        body.addView(list)
-        loadTopxCatalogs(context, list, force = false)
+        val box = FrameLayout(c).apply {
+            setPadding(dp(c, 20), dp(c, 8), dp(c, 20), 0)
+            addView(input)
+        }
+        AlertDialog.Builder(c)
+            .setTitle("URL manifest TopX")
+            .setView(box)
+            .setPositiveButton("Salva") { _, _ ->
+                HubSettings.topxUrl = input.text.toString().ifBlank { HubSettings.DEFAULT_TOPX_URL }
+                TopX.clearCache()
+                refresh(ui)
+            }
+            .setNegativeButton("Annulla", null)
+            .show()
     }
 
-    private fun loadTopxCatalogs(context: Context, list: LinearLayout, force: Boolean) {
-        list.removeAllViews()
-        list.addView(note(context, "Caricamento cataloghi…"))
-        val main = Handler(Looper.getMainLooper())
+    // ------------------------------------------------------------ RaiPlay
+
+    private fun raiTab(ui: Ui) {
+        val c = ui.context
+        heading(ui, "RaiPlay", "Film, serie, documentari e dirette Rai dentro PriSynx (solo Italia/Europa).")
+        ui.content.addView(toggleRow(c, "Righe RaiPlay in home", null,
+            get = { HubSettings.raiHome },
+            set = { HubSettings.raiHome = it }
+        ), rowParams(c))
+        ui.content.addView(toggleRow(c, "Risultati RaiPlay nella ricerca", null,
+            get = { HubSettings.raiSearch },
+            set = { HubSettings.raiSearch = it }
+        ), rowParams(c))
+        heading(ui, "Righe RaiPlay", "Scegli quali righe della home RaiPlay mostrare.")
+        asyncList(ui,
+            load = { runBlocking { RaiHub.rows() }.map { RaiHub.key(it) to it.name } },
+            isOn = { HubSettings.isRaiRowEnabled(it) },
+            setOn = { key, on -> HubSettings.setRaiRowEnabled(key, on) },
+            empty = "RaiPlay non raggiungibile (serve una connessione italiana/europea)."
+        )
+    }
+
+    // ------------------------------------------------------------ Altro
+
+    private fun otherTab(ui: Ui) {
+        val c = ui.context
+        heading(ui, "IlCorsaroViola", "Numero massimo di torrent tra i link (4K e 1080p con più seed per primi).")
+        ui.content.addView(stepperRow(ui, "Risultati torrent", { HubSettings.torrentMax }) {
+            HubSettings.torrentMax = HubSettings.torrentMax + it
+        }, rowParams(c))
+
+        heading(ui, "Ripristino", null)
+        ui.content.addView(actionRow(c, "Ripristina impostazioni predefinite",
+            "Provider, ordine, cataloghi, TopX e RaiPlay") {
+            AlertDialog.Builder(c)
+                .setTitle("Ripristinare tutto?")
+                .setMessage("Tutte le impostazioni di PriSynx torneranno ai valori predefiniti.")
+                .setPositiveButton("Ripristina") { _, _ ->
+                    HubSettings.resetAll()
+                    TopX.clearCache()
+                    toast(c, "Impostazioni ripristinate")
+                    refresh(ui)
+                }
+                .setNegativeButton("Annulla", null)
+                .show()
+        }, rowParams(c))
+    }
+
+    // ------------------------------------------------------------ async lists
+
+    private fun asyncList(
+        ui: Ui,
+        load: () -> List<Pair<String, String>>,
+        isOn: (String) -> Boolean,
+        setOn: (String, Boolean) -> Unit,
+        empty: String
+    ) {
+        val c = ui.context
+        val box = LinearLayout(c).apply { orientation = LinearLayout.VERTICAL }
+        box.addView(note(c, "Caricamento…"))
+        ui.content.addView(box)
+        val gen = ui.generation
         Thread {
-            val catalogs = try {
-                runBlocking { TopX.catalogs(HubSettings.topxUrl, force) }
+            val items = try {
+                load()
             } catch (e: Exception) {
                 emptyList()
             }
-            main.post {
-                list.removeAllViews()
-                if (catalogs.isEmpty()) {
-                    list.addView(note(context, "Nessun catalogo trovato: controlla l'URL o la connessione."))
+            ui.main.post {
+                if (gen != ui.generation) return@post
+                box.removeAllViews()
+                if (items.isEmpty()) {
+                    box.addView(note(c, empty))
                     return@post
                 }
-                val switches = mutableListOf<Pair<TopxCatalog, Switch>>()
-                val bulk = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-                bulk.addView(button(context, "Mostra tutti") {
-                    switches.forEach { (c, s) -> HubSettings.setTopxCatalogEnabled(c.key, true); s.isChecked = true }
-                }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-                bulk.addView(button(context, "Nascondi tutti") {
-                    switches.forEach { (c, s) -> HubSettings.setTopxCatalogEnabled(c.key, false); s.isChecked = false }
-                }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-                list.addView(bulk)
-                catalogs.forEach { catalog ->
-                    val sw = switch(context, catalog.label, HubSettings.isTopxCatalogEnabled(catalog.key)) { _, on ->
-                        HubSettings.setTopxCatalogEnabled(catalog.key, on)
-                    }
-                    switches.add(catalog to sw)
-                    list.addView(sw)
+                val repaints = mutableListOf<() -> Unit>()
+                val bulk = LinearLayout(c).apply { orientation = LinearLayout.HORIZONTAL }
+                bulk.addView(actionRow(c, "Mostra tutti", null) {
+                    items.forEach { setOn(it.first, true) }
+                    repaints.forEach { it() }
+                }, weightParams(c, right = 8))
+                bulk.addView(actionRow(c, "Nascondi tutti", null) {
+                    items.forEach { setOn(it.first, false) }
+                    repaints.forEach { it() }
+                }, weightParams(c, left = 8))
+                box.addView(bulk, rowParams(c))
+                items.forEach { (key, label) ->
+                    val (row, repaint) = toggle(c, label, null,
+                        get = { isOn(key) },
+                        set = { setOn(key, it) }
+                    )
+                    repaints.add(repaint)
+                    box.addView(row, rowParams(c))
                 }
+                linkTabsToContent(ui)
             }
         }.start()
     }
 
+    // ------------------------------------------------------------ rows
+
+    private fun baseRow(context: Context): LinearLayout = LinearLayout(context).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        minimumHeight = dp(context, 60)
+        setPadding(dp(context, 18), dp(context, 10), dp(context, 14), dp(context, 10))
+        isFocusable = true
+        isClickable = true
+        background = rowBackground(context)
+    }
+
+    private fun labels(context: Context, row: LinearLayout, title: String, subtitle: String?) {
+        val col = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+        col.addView(TextView(context).apply {
+            text = title
+            setTextColor(TEXT)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
+            maxLines = 2
+            ellipsize = TextUtils.TruncateAt.END
+        })
+        if (subtitle != null) {
+            col.addView(TextView(context).apply {
+                text = subtitle
+                setTextColor(SUB)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                maxLines = 1
+                ellipsize = TextUtils.TruncateAt.END
+            })
+        }
+        row.addView(col, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+    }
+
+    private fun toggleRow(
+        context: Context,
+        title: String,
+        subtitle: String?,
+        get: () -> Boolean,
+        set: (Boolean) -> Unit
+    ): View = toggle(context, title, subtitle, get, set).first
+
+    /** Toggle row plus a callback that repaints its ON/OFF state. */
+    private fun toggle(
+        context: Context,
+        title: String,
+        subtitle: String?,
+        get: () -> Boolean,
+        set: (Boolean) -> Unit
+    ): Pair<View, () -> Unit> {
+        val row = baseRow(context)
+        labels(context, row, title, subtitle)
+        val state = statePill(context)
+        row.addView(state)
+        paintState(state, get())
+        row.setOnClickListener {
+            val next = !get()
+            set(next)
+            paintState(state, next)
+        }
+        return row to { paintState(state, get()) }
+    }
+
+    private fun actionRow(context: Context, title: String, subtitle: String?, onClick: () -> Unit): View {
+        val row = baseRow(context)
+        labels(context, row, title, subtitle)
+        row.addView(TextView(context).apply {
+            text = "›"
+            setTextColor(ACCENT)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
+            setPadding(dp(context, 10), 0, dp(context, 4), 0)
+        })
+        row.setOnClickListener { onClick() }
+        return row
+    }
+
+    /** Main row (toggle) followed by focusable ▲ ▼ buttons. */
+    private fun orderRow(
+        ui: Ui,
+        tagPrefix: String,
+        title: String,
+        on: (() -> Boolean)?,
+        toggle: (() -> Unit)?,
+        canUp: Boolean,
+        canDown: Boolean,
+        move: (Int) -> Unit
+    ): View {
+        val c = ui.context
+        val line = LinearLayout(c).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        val row = baseRow(c).apply { tag = "${tagPrefix}_row" }
+        labels(c, row, title, null)
+        if (on != null && toggle != null) {
+            val state = statePill(c)
+            row.addView(state)
+            paintState(state, on())
+            row.setOnClickListener {
+                toggle()
+                paintState(state, on())
+            }
+        } else {
+            row.isFocusable = false
+            row.isClickable = false
+        }
+        line.addView(row, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        line.addView(arrow(c, "▲", canUp, "${tagPrefix}_up") {
+            move(-1)
+            refresh(ui, "${tagPrefix}_up", "${tagPrefix}_down")
+        }, arrowParams(c))
+        line.addView(arrow(c, "▼", canDown, "${tagPrefix}_down") {
+            move(1)
+            refresh(ui, "${tagPrefix}_down", "${tagPrefix}_up")
+        }, arrowParams(c))
+        return line
+    }
+
+    private fun stepperRow(ui: Ui, title: String, value: () -> Int, change: (Int) -> Unit): View {
+        val c = ui.context
+        val line = LinearLayout(c).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            background = GradientDrawable().apply { setColor(CARD); cornerRadius = dp(c, 12).toFloat() }
+            setPadding(dp(c, 18), dp(c, 6), dp(c, 6), dp(c, 6))
+            minimumHeight = dp(c, 60)
+        }
+        line.addView(TextView(c).apply {
+            text = title
+            setTextColor(TEXT)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
+        }, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        val number = TextView(c).apply {
+            text = value().toString()
+            setTextColor(TEXT)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            minWidth = dp(c, 56)
+        }
+        line.addView(arrow(c, "−", true, "step_minus") {
+            change(-1)
+            number.text = value().toString()
+        }, arrowParams(c))
+        line.addView(number)
+        line.addView(arrow(c, "+", true, "step_plus") {
+            change(1)
+            number.text = value().toString()
+        }, arrowParams(c))
+        return line
+    }
+
     // ------------------------------------------------------------ widgets
 
-    private fun section(
-        context: Context,
-        name: String,
-        description: String,
-        expanded: Boolean,
-        fill: (LinearLayout) -> Unit
-    ): View {
-        val card = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            background = GradientDrawable().apply { setColor(CARD); cornerRadius = dp(context, 10).toFloat() }
-            setPadding(dp(context, 12), dp(context, 10), dp(context, 12), dp(context, 10))
-        }
-        val body = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            visibility = if (expanded) View.VISIBLE else View.GONE
-        }
-        var filled = false
-        if (expanded) {
-            fill(body); filled = true
-        }
-        val header = TextView(context).apply {
-            text = (if (expanded) "▾  " else "▸  ") + name
+    private fun heading(ui: Ui, title: String, description: String?) {
+        val c = ui.context
+        ui.content.addView(TextView(c).apply {
+            text = title
             setTextColor(ACCENT)
-            setTypeface(typeface, Typeface.BOLD)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
-            isClickable = true
-            isFocusable = true
-            setPadding(0, dp(context, 6), 0, dp(context, 6))
-        }
-        header.setOnClickListener {
-            val open = body.visibility != View.VISIBLE
-            if (open && !filled) {
-                fill(body); filled = true
-            }
-            body.visibility = if (open) View.VISIBLE else View.GONE
-            header.text = (if (open) "▾  " else "▸  ") + name
-        }
-        card.addView(header)
-        card.addView(note(context, description))
-        card.addView(body)
-        return card.also {
-            it.layoutParams = matchWrap().apply { topMargin = dp(context, 10) }
-        }
-    }
-
-    private fun switch(
-        context: Context,
-        label: String,
-        checked: Boolean,
-        onChange: (CompoundButton, Boolean) -> Unit
-    ) = Switch(context).apply {
-        text = label
-        setTextColor(TEXT)
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
-        isChecked = checked
-        setPadding(0, dp(context, 6), 0, dp(context, 6))
-        setOnCheckedChangeListener(onChange)
-    }
-
-    private fun arrow(context: Context, symbol: String, enabled: Boolean, onClick: () -> Unit) =
-        TextView(context).apply {
-            text = symbol
-            gravity = Gravity.CENTER
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            setTextColor(if (enabled) ACCENT else 0x33FFFFFF)
-            isEnabled = enabled
-            isClickable = enabled
-            isFocusable = enabled
-            minWidth = dp(context, 40)
-            minHeight = dp(context, 40)
-            if (enabled) setOnClickListener { onClick() }
-        }
-
-    private fun button(context: Context, label: String, onClick: () -> Unit) = Button(context).apply {
-        text = label
-        isAllCaps = false
-        setTextColor(Color.WHITE)
-        background = GradientDrawable().apply { setColor(0xFF2A3140.toInt()); cornerRadius = dp(context, 8).toFloat() }
-        setOnClickListener { onClick() }
-    }.also {
-        it.layoutParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply { setMargins(dp(context, 4), dp(context, 6), dp(context, 4), dp(context, 2)) }
-    }
-
-    private fun title(context: Context, value: String, size: Float) = TextView(context).apply {
-        text = value
-        setTextColor(TEXT)
-        setTypeface(typeface, Typeface.BOLD)
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, size)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(dp(c, 4), dp(c, if (ui.content.childCount == 0) 0 else 18), 0, dp(c, 2))
+        })
+        if (description != null) ui.content.addView(note(c, description))
     }
 
     private fun note(context: Context, value: String) = TextView(context).apply {
         text = value
         setTextColor(SUB)
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-        setPadding(0, dp(context, 2), 0, dp(context, 4))
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+        setPadding(dp(context, 4), dp(context, 2), dp(context, 4), dp(context, 8))
     }
 
-    private fun toast(context: Context, value: String) =
-        Toast.makeText(context, value, Toast.LENGTH_SHORT).show()
+    private fun statePill(context: Context) = TextView(context).apply {
+        setTextColor(Color.WHITE)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+        typeface = Typeface.DEFAULT_BOLD
+        gravity = Gravity.CENTER
+        minWidth = dp(context, 64)
+        setPadding(dp(context, 14), dp(context, 6), dp(context, 14), dp(context, 6))
+    }
 
-    private fun matchWrap() =
-        LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+    private fun paintState(view: TextView, on: Boolean) {
+        view.text = if (on) "ON" else "OFF"
+        view.setTextColor(if (on) Color.WHITE else SUB)
+        view.background = GradientDrawable().apply {
+            setColor(if (on) ON else OFF)
+            cornerRadius = dp(view.context, 20).toFloat()
+        }
+    }
 
-    private fun dp(context: Context, value: Int) =
-        (value * context.resources.displayMetrics.density).toInt()
+    private fun arrow(context: Context, symbol: String, enabled: Boolean, tagValue: String, onClick: () -> Unit) =
+        TextView(context).apply {
+            text = symbol
+            tag = tagValue
+            gravity = Gravity.CENTER
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+            setTextColor(if (enabled) TEXT else OFF)
+            isFocusable = enabled
+            isClickable = enabled
+            background = rowBackground(context)
+            if (enabled) setOnClickListener { onClick() }
+        }
+
+    private fun pill(context: Context, label: String, onClick: () -> Unit) = TextView(context).apply {
+        text = label
+        id = View.generateViewId()
+        setTextColor(TEXT)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+        setPadding(dp(context, 18), dp(context, 8), dp(context, 18), dp(context, 8))
+        isFocusable = true
+        isClickable = true
+        background = rowBackground(context)
+        setOnClickListener { onClick() }
+    }
+
+    private fun rowBackground(context: Context): Drawable {
+        fun shape(fill: Int, stroke: Int?) = GradientDrawable().apply {
+            setColor(fill)
+            cornerRadius = dp(context, 12).toFloat()
+            if (stroke != null) setStroke(dp(context, 3), stroke)
+        }
+        return StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_focused), shape(CARD_FOCUS, ACCENT))
+            addState(intArrayOf(android.R.attr.state_pressed), shape(CARD_FOCUS, ACCENT))
+            addState(intArrayOf(), shape(CARD, null))
+        }
+    }
+
+    private fun tabBackground(context: Context): Drawable {
+        fun shape(fill: Int, stroke: Int?) = GradientDrawable().apply {
+            setColor(fill)
+            cornerRadius = dp(context, 22).toFloat()
+            if (stroke != null) setStroke(dp(context, 3), stroke)
+        }
+        return StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_focused), shape(ACCENT, Color.WHITE))
+            addState(intArrayOf(android.R.attr.state_selected), shape(ACCENT, null))
+            addState(intArrayOf(android.R.attr.state_pressed), shape(ACCENT, null))
+            addState(intArrayOf(), shape(ACCENT_SOFT, null))
+        }
+    }
+
+    private fun rowParams(context: Context) = LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+    ).apply { bottomMargin = dp(context, 8) }
+
+    private fun weightParams(context: Context, left: Int = 0, right: Int = 0) =
+        LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+            leftMargin = dp(context, left / 2)
+            rightMargin = dp(context, right / 2)
+        }
+
+    private fun arrowParams(context: Context) =
+        LinearLayout.LayoutParams(dp(context, 60), dp(context, 60)).apply { leftMargin = dp(context, 8) }
+
+    private fun shorten(url: String) = if (url.length > 48) url.take(45) + "…" else url
+
+    private fun toast(context: Context, message: String) =
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+    private fun dp(context: Context, value: Int): Int =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value.toFloat(), context.resources.displayMetrics).toInt()
 }

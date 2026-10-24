@@ -2,6 +2,7 @@ package prisynx.hub
 
 import com.lagradost.cloudstream3.HomePageList
 import com.lagradost.cloudstream3.HomePageResponse
+import com.lagradost.cloudstream3.LoadResponse
 import com.lagradost.cloudstream3.MainPageRequest
 import com.lagradost.cloudstream3.SearchResponse
 import com.lagradost.cloudstream3.SubtitleFile
@@ -24,19 +25,66 @@ import prisynx.providers.core.MediaRef
 import prisynx.providers.core.TmdbProvider
 
 class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
-    override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries, TvType.Anime)
+    override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries, TvType.Anime, TvType.Live)
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val rows = HubSettings.tmdbRows.filter { HubSettings.isTmdbRowEnabled(it) }
         return coroutineScope {
             val tmdbJob = rows.map { spec -> async { fetchRow(spec.row, page) } }
             val topxJob = async { if (page <= 1 && HubSettings.topxEnabled) topxRows() else emptyList() }
+            val raiJob = async { if (page <= 1 && HubSettings.raiHome) raiRows() else emptyList() }
             val tmdb = tmdbJob.awaitAll()
             val tmdbLists = tmdb.filter { it.list.isNotEmpty() }.map { HomePageList(it.name, it.list) }
             val topx = topxJob.await()
-            val lists = if (HubSettings.topxFirst) topx + tmdbLists else tmdbLists + topx
+            val rai = raiJob.await()
+            val groups = mapOf("tmdb" to tmdbLists, "topx" to topx, "rai" to rai)
+            val lists = HubSettings.homeOrder().flatMap { groups[it].orEmpty() }
             newHomePageResponse(lists, tmdb.any { it.hasNext })
         }
+    }
+
+    private suspend fun raiRows(): List<HomePageList> =
+        RaiHub.rows()
+            .filter { HubSettings.isRaiRowEnabled(RaiHub.key(it)) }
+            .map { HomePageList("RaiPlay · ${it.name}", it.list, isHorizontalImages = true) }
+
+    // ------------------------------------------------------------ RaiPlay routing
+
+    private suspend fun tmdbSearch(query: String): List<SearchResponse> = super.search(query)
+
+    override suspend fun search(query: String): List<SearchResponse> = coroutineScope {
+        val rai = async {
+            if (!HubSettings.raiSearch) emptyList()
+            else withTimeoutOrNull(RAI_TIMEOUT_MS) {
+                try {
+                    RaiHub.api.search(query)
+                } catch (e: Exception) {
+                    emptyList()
+                }
+            } ?: emptyList()
+        }
+        val tmdb = try {
+            tmdbSearch(query)
+        } catch (e: Exception) {
+            emptyList()
+        }
+        tmdb + rai.await()
+    }
+
+    override suspend fun load(url: String): LoadResponse {
+        if (MediaRef.parse(url) != null) return super.load(url)
+        return RaiHub.api.load(url)
+            ?: throw com.lagradost.cloudstream3.ErrorLoadingException("RaiPlay: contenuto non disponibile")
+    }
+
+    override suspend fun loadLinks(
+        data: String,
+        isCasting: Boolean,
+        subtitleCallback: (SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean {
+        if (MediaRef.parse(data) != null) return super.loadLinks(data, isCasting, subtitleCallback, callback)
+        return RaiHub.api.loadLinks(data, isCasting, subtitleCallback, callback)
     }
 
     private suspend fun topxRows(): List<HomePageList> {
@@ -131,5 +179,6 @@ class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
 
     private companion object {
         const val SOURCE_TIMEOUT_MS = 60_000L
+        const val RAI_TIMEOUT_MS = 20_000L
     }
 }

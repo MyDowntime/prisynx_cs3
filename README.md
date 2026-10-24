@@ -107,7 +107,7 @@ In CloudStream: **Impostazioni → Estensioni → Aggiungi repository** e incoll
 
 | Repository | URL | Cosa contiene |
 | :--- | :--- | :--- |
-| 🧩 **PriSynx Center** (consigliato) | `https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/center.json` | L'estensione **PriSynx** con tutti i provider e il menu ⚙️, più **RaiPlay** (separata) |
+| 🧩 **PriSynx Center** (consigliato) | `https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/center.json` | L'estensione **PriSynx** con tutti i provider **e RaiPlay integrata**, più il menu ⚙️ per TV; RaiPlay è installabile anche da sola |
 | 🔌 **Provider singoli** | `https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/singoli.json` | Un'estensione per provider, attivabili/aggiornabili una per una (niente menu) |
 
 Il vecchio URL `.../main/main.json` resta valido e mostra tutte le estensioni insieme.
@@ -117,15 +117,16 @@ Provider singoli disponibili: `Altadefinizione`, `AnimeSaturn`, `AnimeUnity`, `A
 
 ### 🧩 PriSynx (hub con menu)
 
-L'estensione **PriSynx** raccoglie in un'unica sorgente tutti i provider (tranne RaiPlay, che resta separata): al click su un titolo interroga in parallelo le sorgenti attive e invia i link nell'ordine scelto.
-Dal pulsante ⚙️ dell'estensione (*Impostazioni → Estensioni → PriSynx*) si apre il menu:
+L'estensione **PriSynx** raccoglie in un'unica sorgente tutti i provider **e RaiPlay**: al click su un titolo TMDB interroga in parallelo le sorgenti attive e invia i link nell'ordine scelto; le righe e i risultati RaiPlay (film, serie, documentari, dirette) si aprono e si riproducono direttamente dal catalogo Rai.
+Dal pulsante ⚙️ dell'estensione (*Impostazioni → Estensioni → PriSynx*) si apre il menu a schermo intero, pensato per il telecomando (frecce + OK, *Indietro* per chiudere; ogni modifica è salvata subito, ricarica la home per vederla):
 
-| Sezione | Cosa si può fare |
+| Scheda | Cosa si può fare |
 | :--- | :--- |
-| **Provider** | Attivare/disattivare ogni sorgente e cambiarne l'ordine (▲/▼), pulsanti *Tutti* / *Nessuno* |
-| **Cataloghi TMDB** | Scegliere le liste in home: Tendenze, Film/Serie popolari, Film/Serie più votati (attive di default), Al cinema, In arrivo, Serie in onda |
-| **TopX** | Mostrare/nascondere tutti i cataloghi TopX o i singoli cataloghi, metterli prima/dopo quelli TMDB, cambiare l'URL del manifest TopX |
-| **IlCorsaroViola** | Numero massimo di torrent (default 3): prima il 4K e il Full HD con più seed, poi i più seedati |
+| **Provider** | OK su una riga = ON/OFF; ▲/▼ a destra per l'ordine dei link; *Attiva tutti* / *Disattiva tutti* |
+| **Home** | Ordine delle sezioni (TopX, TMDB, RaiPlay) e righe TMDB: Tendenze, Film/Serie popolari, Film/Serie più votati (attive di default), Al cinema, In arrivo, Serie in onda |
+| **TopX** | Mostrare/nascondere TopX e i singoli cataloghi, cambiare o ripristinare l'URL del manifest |
+| **RaiPlay** | Righe RaiPlay in home e risultati RaiPlay nella ricerca (ON/OFF), scelta delle singole righe RaiPlay |
+| **Altro** | Numero massimo di torrent IlCorsaroViola (default 3: prima il 4K e il Full HD con più seed), ripristino impostazioni |
 
 Le estensioni singole restano installabili a parte (ognuna con home e ricerca proprie).
 

@@ -7,7 +7,7 @@ val syncHubSources = tasks.register<Sync>("syncHubSources") {
     from(rootDir) {
         include("*/src/main/kotlin/**/*.kt")
         exclude("*/src/main/kotlin/**/*Plugin.kt")
-        exclude("PriSynx/**", "RaiPlay/**", "shared/**")
+        exclude("PriSynx/**", "shared/**")
     }
     into(hubSourceDir)
 }
@@ -19,13 +19,13 @@ android {
 
 tasks.named("preBuild").configure { dependsOn(syncHubSources) }
 
-version = 6
+version = 7
 
 cloudstream {
-    description = "PriSynx: tutte le sorgenti in un'unica estensione, con menu per scegliere provider, ordine, cataloghi TMDB e TopX."
+    description = "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay inclusa), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX e RaiPlay."
     authors = listOf("PriSynx")
     status = 1
-    tvTypes = listOf("Movie", "TvSeries", "Anime")
+    tvTypes = listOf("Movie", "TvSeries", "Anime", "Live")
     language = "it"
     iconUrl = "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PriSynx.png"
 }

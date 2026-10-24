@@ -128,6 +128,39 @@ object HubSettings {
     fun isTopxCatalogEnabled(key: String) = bool("topx_cat_$key", true)
     fun setTopxCatalogEnabled(key: String, on: Boolean) = setBool("topx_cat_$key", on)
 
+    // ------------------------------------------------------------ RaiPlay
+
+    var raiHome: Boolean
+        get() = bool("rai_home", true)
+        set(value) = setBool("rai_home", value)
+
+    var raiSearch: Boolean
+        get() = bool("rai_search", true)
+        set(value) = setBool("rai_search", value)
+
+    fun isRaiRowEnabled(key: String) = bool("rai_row_$key", true)
+    fun setRaiRowEnabled(key: String, on: Boolean) = setBool("rai_row_$key", on)
+
+    // ------------------------------------------------------------ home order
+
+    val homeGroups: List<Pair<String, String>> = listOf(
+        "topx" to "Cataloghi TopX",
+        "tmdb" to "Cataloghi TMDB",
+        "rai" to "RaiPlay"
+    )
+
+    fun homeOrder(): List<String> {
+        val ids = homeGroups.map { it.first }
+        val saved = prefs?.getString("home_order", null)
+            ?.split(',')?.filter { it in ids }?.distinct() ?: emptyList()
+        val fallback = if (topxFirst) listOf("topx", "tmdb", "rai") else listOf("tmdb", "topx", "rai")
+        return saved + fallback.filter { it !in saved }
+    }
+
+    fun saveHomeOrder(order: List<String>) {
+        prefs?.edit()?.putString("home_order", order.joinToString(","))?.apply()
+    }
+
     fun resetAll() {
         prefs?.edit()?.clear()?.apply()
         ProviderOptions.torrentMaxResults = ProviderOptions.DEFAULT_TORRENT_MAX

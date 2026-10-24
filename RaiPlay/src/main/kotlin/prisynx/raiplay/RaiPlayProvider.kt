@@ -209,7 +209,14 @@ class RaiPlayProvider : MainAPI() {
         page: Int,
         request: MainPageRequest
     ): HomePageResponse? {
-        val root = getJson("/index.json") ?: return null
+        val rows = homeRows()
+        if (rows.isEmpty()) return null
+        return newHomePageResponse(rows)
+    }
+
+    /** RaiPlay home rows (also used by the PriSynx hub). */
+    suspend fun homeRows(): List<HomePageList> {
+        val root = getJson("/index.json") ?: return emptyList()
         val rows = mutableListOf<HomePageList>()
 
         for (section in root.path("contents")) {
@@ -225,8 +232,7 @@ class RaiPlayProvider : MainAPI() {
             }
         }
 
-        if (rows.isEmpty()) return null
-        return newHomePageResponse(rows)
+        return rows
     }
 
     private fun cardToSearchResponse(card: JsonNode, section: String): SearchResponse? {
