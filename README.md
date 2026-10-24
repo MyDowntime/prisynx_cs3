@@ -113,7 +113,9 @@ In CloudStream: **Impostazioni → Estensioni → Aggiungi repository** e incoll
 Il vecchio URL `.../main/main.json` resta valido e mostra tutte le estensioni insieme.
 Non installare insieme PriSynx e i provider singoli: avresti i link doppi.
 
-Provider singoli disponibili: `Altadefinizione`, `AnimeSaturn`, `AnimeUnity`, `AnimeWorld`, `CB01`, `IlCorsaroViola`, `DualSync`, `Eurostreaming`, `Filmez`, `Guardoserie`, `MovyITA`, `OnlineSerieTV`, `PaCC`, `RaiPlay`, `RealTime`, `Toonitalia`, `VidxGo`, `VixSrc`.
+Provider singoli disponibili: `Altadefinizione`, `AnimeSaturn`, `AnimeUnity`, `AnimeWorld`, `CB01`, `IlCorsaroViola`, `DualSync`, `Eurostreaming`, `Filmez`, `Guardoserie`, `KissKH`, `MovyITA`, `OnlineSerieTV`, `PaCC`, `RaiPlay`, `RealTime`, `Toonitalia`, `VidxGo`, `VixSrc`.
+
+**KissKH** include un catalogo nativo (drama e film coreani, giapponesi e thailandesi, più anime) e apre schede/episodi usando gli ID KissKH: non serve un ID TMDB/IMDb per navigare il catalogo.
 
 ### 🧩 PriSynx (hub con menu)
 
