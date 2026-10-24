@@ -141,11 +141,30 @@ object HubSettings {
     fun isRaiRowEnabled(key: String) = bool("rai_row_$key", true)
     fun setRaiRowEnabled(key: String, on: Boolean) = setBool("rai_row_$key", on)
 
+    // ------------------------------------------------------------ Anime (Kitsu)
+
+    var kitsuHome: Boolean
+        get() = bool("kitsu_home", true)
+        set(value) = setBool("kitsu_home", value)
+
+    var kitsuSearch: Boolean
+        get() = bool("kitsu_search", true)
+        set(value) = setBool("kitsu_search", value)
+
+    /** Hide Japanese animation from TMDB rows/search (Kitsu handles anime). */
+    var hideTmdbAnime: Boolean
+        get() = bool("kitsu_hide_tmdb", true)
+        set(value) = setBool("kitsu_hide_tmdb", value)
+
+    fun isKitsuRowEnabled(id: String) = bool("kitsu_row_$id", true)
+    fun setKitsuRowEnabled(id: String, on: Boolean) = setBool("kitsu_row_$id", on)
+
     // ------------------------------------------------------------ home order
 
     val homeGroups: List<Pair<String, String>> = listOf(
         "topx" to "Cataloghi TopX",
         "tmdb" to "Cataloghi TMDB",
+        "kitsu" to "Anime (Kitsu)",
         "rai" to "RaiPlay"
     )
 
@@ -153,7 +172,7 @@ object HubSettings {
         val ids = homeGroups.map { it.first }
         val saved = prefs?.getString("home_order", null)
             ?.split(',')?.filter { it in ids }?.distinct() ?: emptyList()
-        val fallback = if (topxFirst) listOf("topx", "tmdb", "rai") else listOf("tmdb", "topx", "rai")
+        val fallback = if (topxFirst) listOf("topx", "tmdb", "kitsu", "rai") else listOf("tmdb", "topx", "kitsu", "rai")
         return saved + fallback.filter { it !in saved }
     }
 

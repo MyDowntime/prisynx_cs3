@@ -19,7 +19,7 @@ android {
 
 tasks.named("preBuild").configure { dependsOn(syncHubSources) }
 
-version = 7
+version = 8
 
 cloudstream {
     description = "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay inclusa), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX e RaiPlay."

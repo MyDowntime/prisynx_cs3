@@ -154,6 +154,12 @@ abstract class TmdbProvider(
     open val supportsMovies = true
     open val supportsTv = true
 
+    /** True when the provider can resolve Kitsu anime ids ([resolveKitsu]). */
+    open val supportsKitsu = false
+
+    /** Filter for TMDB cards (catalogue rows, search, recommendations). */
+    protected open fun acceptCard(node: JsonNode, isTv: Boolean): Boolean = true
+
     override val supportedTypes: Set<TvType>
         get() = buildSet {
             if (supportsMovies) add(TvType.Movie)
@@ -302,6 +308,7 @@ abstract class TmdbProvider(
         if (node.path("adult").asBoolean(false) == true) return null
         val id = node.path("id").asInt(0)
         if (id <= 0) return null
+        if (!acceptCard(node, isTv)) return null
         val ref = MediaRef(id, isTv)
         val title =
             if (isTv) node.path("name").asText("")
@@ -401,6 +408,7 @@ abstract class TmdbProvider(
     // ---------------------------------------------------------------- load
 
     override suspend fun load(url: String): LoadResponse {
+        if (MediaRef.parse(url) == null) KitsuRef.parse(url)?.let { return loadKitsu(it, url) }
         val ref = MediaRef.parse(url)
             ?: throw com.lagradost.cloudstream3.ErrorLoadingException("Riferimento non valido")
         val details = fetchFullDetails(ref) ?: fetchDetails(ref)
@@ -520,6 +528,9 @@ abstract class TmdbProvider(
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
+        if (MediaRef.parse(data) == null) {
+            KitsuRef.parse(data)?.let { return resolveKitsu(it, subtitleCallback, callback) }
+        }
         val ref = MediaRef.parse(data) ?: return false
         if (ref.isTv && !supportsTv) return false
         if (!ref.isTv && !supportsMovies) return false
@@ -530,6 +541,13 @@ abstract class TmdbProvider(
         }
         return resolve(ref, meta, subtitleCallback, callback)
     }
+
+    /** Resolve a Kitsu anime episode (or movie); only anime providers implement it. */
+    open suspend fun resolveKitsu(
+        ref: KitsuRef,
+        subtitleCallback: (SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean = false
 
     /** Implement the provider-specific resolution for a movie or a TV episode. */
     open suspend fun resolve(

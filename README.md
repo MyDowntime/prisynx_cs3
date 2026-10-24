@@ -123,10 +123,13 @@ Dal pulsante ⚙️ dell'estensione (*Impostazioni → Estensioni → PriSynx*) 
 | Scheda | Cosa si può fare |
 | :--- | :--- |
 | **Provider** | OK su una riga = ON/OFF; ▲/▼ a destra per l'ordine dei link; *Attiva tutti* / *Disattiva tutti* |
-| **Home** | Ordine delle sezioni (TopX, TMDB, RaiPlay) e righe TMDB: Tendenze, Film/Serie popolari, Film/Serie più votati (attive di default), Al cinema, In arrivo, Serie in onda |
+| **Home** | Ordine delle sezioni (TopX, TMDB, Anime Kitsu, RaiPlay) e righe TMDB: Tendenze, Film/Serie popolari, Film/Serie più votati (attive di default), Al cinema, In arrivo, Serie in onda |
 | **TopX** | Mostrare/nascondere TopX e i singoli cataloghi, cambiare o ripristinare l'URL del manifest |
+| **Anime** | Anime dal catalogo **Kitsu** (righe in home: tendenza, in corso, più popolari, più votati; risultati nella ricerca) e opzione per nascondere gli anime giapponesi da TMDB |
 | **RaiPlay** | Righe RaiPlay in home e risultati RaiPlay nella ricerca (ON/OFF), scelta delle singole righe RaiPlay |
 | **Altro** | Numero massimo di torrent IlCorsaroViola (default 3: prima il 4K e il Full HD con più seed), ripristino impostazioni |
+
+**Anime con Kitsu**: TMDB raggruppa gli anime in stagioni/episodi diversi da quelli dei siti anime (es. *Jujutsu Kaisen* S2E1 diventava l'episodio 25), quindi molti episodi non si trovavano. Kitsu ha una scheda per ogni stagione/cour con la stessa numerazione di AnimeUnity, AnimeSaturn e AnimeWorld: aprendo un anime dalle righe o dalla ricerca Kitsu, PriSynx interroga solo queste tre sorgenti (nell'ordine scelto) con l'ID Kitsu. Le pagine mostrano poster, sfondo, logo, trama in italiano (da TMDB, se c'è), trailer, titoli e miniature degli episodi, e i titoli collegati (sequel/prequel). Di default gli anime giapponesi non compaiono più nei cataloghi e nella ricerca TMDB (si può riattivare dalla scheda *Anime*). Anche il percorso TMDB è più tollerante: se l'episodio mappato non esiste, viene riprovato col numero originale.
 
 Le estensioni singole restano installabili a parte (ognuna con home e ricerca proprie).
 

@@ -44,7 +44,7 @@ object HubSettingsDialog {
     private const val ON = 0xFF8B5CF6.toInt()
     private const val OFF = 0xFF3A3347.toInt()
 
-    private val tabs = listOf("Provider", "Home", "TopX", "RaiPlay", "Altro")
+    private val tabs = listOf("Provider", "Home", "TopX", "Anime", "RaiPlay", "Altro")
 
     private class Ui(val context: Context, val content: LinearLayout, val scroll: ScrollView) {
         val tabViews = mutableListOf<TextView>()
@@ -161,7 +161,8 @@ object HubSettingsDialog {
             0 -> providerTab(ui)
             1 -> homeTab(ui)
             2 -> topxTab(ui)
-            3 -> raiTab(ui)
+            3 -> animeTab(ui)
+            4 -> raiTab(ui)
             else -> otherTab(ui)
         }
         ui.scroll.scrollTo(0, 0)
@@ -334,6 +335,34 @@ object HubSettingsDialog {
             .show()
     }
 
+    // ------------------------------------------------------------ Anime
+
+    private fun animeTab(ui: Ui) {
+        val c = ui.context
+        heading(ui, "Anime da Kitsu",
+            "Kitsu ha una scheda per ogni stagione con la numerazione degli episodi usata da AnimeUnity, AnimeSaturn e AnimeWorld: gli episodi corrispondono sempre.")
+        ui.content.addView(toggleRow(c, "Righe anime Kitsu in home", null,
+            get = { HubSettings.kitsuHome },
+            set = { HubSettings.kitsuHome = it }
+        ), rowParams(c))
+        ui.content.addView(toggleRow(c, "Anime Kitsu nella ricerca", null,
+            get = { HubSettings.kitsuSearch },
+            set = { HubSettings.kitsuSearch = it }
+        ), rowParams(c))
+        ui.content.addView(toggleRow(c, "Nascondi gli anime da TMDB",
+            "Toglie l'animazione giapponese dai cataloghi e dalla ricerca TMDB",
+            get = { HubSettings.hideTmdbAnime },
+            set = { HubSettings.hideTmdbAnime = it }
+        ), rowParams(c))
+        heading(ui, "Righe Kitsu", null)
+        prisynx.providers.core.Kitsu.rows.forEach { row ->
+            ui.content.addView(toggleRow(c, row.name, null,
+                get = { HubSettings.isKitsuRowEnabled(row.id) },
+                set = { HubSettings.setKitsuRowEnabled(row.id, it) }
+            ), rowParams(c))
+        }
+    }
+
     // ------------------------------------------------------------ RaiPlay
 
     private fun raiTab(ui: Ui) {
@@ -367,7 +396,7 @@ object HubSettingsDialog {
 
         heading(ui, "Ripristino", null)
         ui.content.addView(actionRow(c, "Ripristina impostazioni predefinite",
-            "Provider, ordine, cataloghi, TopX e RaiPlay") {
+            "Provider, ordine, cataloghi, TopX, anime e RaiPlay") {
             AlertDialog.Builder(c)
                 .setTitle("Ripristinare tutto?")
                 .setMessage("Tutte le impostazioni di PriSynx torneranno ai valori predefiniti.")

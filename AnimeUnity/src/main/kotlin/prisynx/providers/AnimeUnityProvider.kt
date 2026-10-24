@@ -24,6 +24,7 @@ import prisynx.providers.core.absUrl
 import prisynx.providers.core.bestHeight
 import prisynx.providers.core.decodeHtmlEntities
 import prisynx.providers.core.enc
+import prisynx.providers.core.KitsuRef
 import prisynx.providers.core.fetchAnimeMapping
 import prisynx.providers.core.isItalianPath
 import prisynx.providers.core.json
@@ -418,11 +419,46 @@ class AnimeUnityProvider : TmdbProvider("AnimeUnity", "https://www.animeunity.to
         }
         if (paths.isEmpty()) return false
 
-        val targetEpisode = mappingAbsoluteEpisode(map, episode)
+        return emitPaths(paths, mappingAbsoluteEpisode(map, episode), episode, !ref.isTv, callback)
+    }
+
+    override val supportsKitsu = true
+
+    override suspend fun resolveKitsu(
+        ref: KitsuRef,
+        subtitleCallback: (SubtitleFile) -> Unit,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean {
+        val episode = ref.episode ?: 1
+        val map = fetchAnimeMapping("kitsu", ref.id, 0, episode) ?: return false
+        val paths = mappingPaths(map, "animeunity", "/anime/")
+        if (paths.isEmpty()) return false
+        return emitPaths(paths, mappingAbsoluteEpisode(map, episode), episode, ref.isMovie, callback)
+    }
+
+    /** Tries the mapped episode number, then the requested one (TMDB episode groups can be off). */
+    private suspend fun emitPaths(
+        paths: List<String>,
+        target: Int,
+        fallback: Int,
+        isMovie: Boolean,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean {
+        if (emitEpisode(paths, target, isMovie, callback)) return true
+        return fallback != target && emitEpisode(paths, fallback, isMovie, callback)
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private suspend fun emitEpisode(
+        paths: List<String>,
+        episodeNumber: Int,
+        isMovie: Boolean,
+        callback: (ExtractorLink) -> Unit
+    ): Boolean {
         var emitted = 0
         val seen = HashSet<String>()
         for (path in paths) {
-            val embed = resolveEmbed(path, targetEpisode) ?: continue
+            val embed = resolveEmbed(path, episodeNumber) ?: continue
             val streams = resolveVix(embed) ?: continue
             for (stream in streams.take(2)) {
                 if (!seen.add(stream.first)) continue
