@@ -10,6 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import prisynx.providers.core.AudioSync
+import prisynx.providers.core.ProviderOptions
 import prisynx.providers.core.MediaMeta
 import prisynx.providers.core.MediaRef
 import prisynx.providers.core.TmdbProvider
@@ -116,13 +117,16 @@ class DualSyncProvider : TmdbProvider("DualSync", "https://cinejoy.pk") {
         for (quality in listOf(2160, 1080)) {
             val best = candidates.filter { it.quality == quality }.minByOrNull { it.sync.rank } ?: continue
             val video = best.url
-            if (audio != null && master != null) {
+            val syncedOnly = ProviderOptions.syncedOnly
+            if (audio != null && master != null && (!syncedOnly || best.sync.delayMs != null)) {
                 val delay = best.sync.delayMs
-                val (itaAudio, itaSubs) = if (delay != null && delay != 0) {
-                    vixDelayedTracks(audio, subs, master.headers, delay) ?: (audio to subs)
+                val shifted = if (delay != null && delay != 0) {
+                    vixDelayedTracks(audio, subs, master.headers, delay)
                 } else {
                     audio to subs
                 }
+                if (shifted == null && syncedOnly) continue
+                val (itaAudio, itaSubs) = shifted ?: (audio to subs)
                 emit(
                     callback = callback,
                     url = publishCombinedMaster(video, quality, itaAudio, itaSubs),
@@ -132,6 +136,10 @@ class DualSyncProvider : TmdbProvider("DualSync", "https://cinejoy.pk") {
                     referer = "https://cinejoy.pk/",
                     headers = best.encode.headers
                 )
+            }
+            if (syncedOnly) {
+                emitted++
+                continue
             }
             emit(
                 callback = callback,

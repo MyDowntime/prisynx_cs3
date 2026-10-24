@@ -30,8 +30,11 @@ class HubSource(val id: String, val label: String, factory: () -> TmdbProvider) 
 class HubTmdbRow(val id: String, val defaultOn: Boolean, val row: TmdbRow)
 
 object HubSettings {
-    const val DEFAULT_TOPX_URL =
-        "https://topx.stremio-italia.eu/c/AmzMr7GQKJFY_AZB6Pdv-RdRZqsMT839KuI7ScaZ23xj5IL6ljF8gEBudpT00Giq5mL0Hb4v1CdjBYqtabrPZNccKuM5FOkj6T0b1q7mLuIP7aI4GuMqjY3zFq3zCXqx3FCkof9PvH5UdpirBCEc9cuZ0gGGY9qir6wNIx-yNmQrwKrYiCKwTaE3RS6qG0W7SpAcZ1XtfJaUyoNZQTxRrPl-stXCR3ziqp90esldxi9e1DF376w5r-RpUlT7XeOmB9Y9UlaqNo4sHwH4n-kjHdM3hjUQ99K09zcDvqjQ5Y12xDQHF4qR3El9JHePJ2XFB3Wr_LuYwd-RiieVkbkyPKwK7OmYpLZvUU-SvyjBofp0g1UFbhPBhKzNSg1EmgJSsB5uvs8YQIfgaLoK2PlLs1RZHvcOg4h-aZRRqhs_FsWOJzrwdxLKSsqfau_dwmJtmVDHEiivgrLFE71UrW9ohwJocnzCSltNtcbmVMVL3FSY9FSIJ-FdnYvJ-F0tmelBdOGyNwWthaM5x3LXXy6x3RY6lOegIVlVX2NMcdDazt5v682mbeOo0YIzAwCEZ7pe7OiJLp3gQYPj_vlj9rkqugXgZoMMZC_lzKhiPZP9AnJ9bIPB9b02gv7kiKXPrbSpYvmjDSAny2dak0PbwEX0sDt6ro1DQTc4XxnKE8Rb5BJjhjRYRl4lAU5PmuDXSjKh0kzNwZVPhOs/manifest.json"
+    const val DEFAULT_TOPX_PORTRAIT =
+        "https://topx.stremio-italia.eu/c/Uty9zjSPGPwVbRdjaIspCldE5AIW1RKgy_kL88pC7Mo3HLu5qqmDizIL4ECylNn5cCyofuzOHhKWM3H6djV6aR81_vw2OD-aik9HyW4iUefTwonsXRmqfKs8ORN4oMdtep-cull1rFKnwJS_PwZwKx-aTgSmkpdb4P7gqgoCBpKNAGVTD2hMEeKai1sMzf4TweWBx6gAB62L_Yc66EvD0JXk5l1vj5DOYtwOzypwujVCrk6E-59lqq1SnSyBEh1IAXQY-FYArtgc5MlXz5P7WAU6GsWAeJQAZ6geFIDcdop7vArAlFLhIDp54vBQ94mzhChB2kTEj6titWa0VcYEFQPpvwWP1GXiCLRk4WyMXG3oPjJNe6S8ohvRoYNxUKURGmd8qsPJ4D2Q4-Pc3p2mgkYLrqIgPfdmx5fUE2Hm1unR4fCp59dO18Dea9VGAqf3wyhUgwFhjcNkUWwa71powY9ktEn3BdO1HbjeIPNHo5sfGafyIna95W2Z3HfyFnnJ98HpkPXPKC5p-r8mBLlfIpb0cVlXEPkzkxN6aHeTPIFTXEwq7sgO1hfjvyaxBYqAfokzhu771TGLeveh5IupE6pYCC4P_Qe8bVwNuLX9tYesLoPcvzf-mDKCx7AciCQ-v1LYFAVDbrj2Cb2zH_86u-O9UP9Tl0aQMuANMu2--ho-Z3Aa6z4/manifest.json"
+
+    const val DEFAULT_TOPX_LANDSCAPE =
+        "https://topx.stremio-italia.eu/c/-kIZGCIuPndmniQKIOb6TYAZgz00cQxVQIdOkB7TuRWaJPMkh0PkM3mgOO6MNamOgO8umTwJAuXxQ_edvfDSVg8rf7I56NNvqYShaVAmQOyEWpz2TbOWxWadRW_T0RM7SVJAzxFlJYEqa46twZw10ZIwYVXG5FC4vi2_SXmJzjW_U2PmKvV600rN-Hy3xfKXSvigMc8o0t1BAlespZt7MrQL05IZlzkkt5Lo-ca6mglzQwkSH_TNXdjQAcRWY0Vpf7gULUJLrcDtaoRQXGanqW-3L8Ki0KMIoA3gGkLFz22lgfxZcd8k4ew6KvrEn6e03Alt0neKLnPpGZrXzOz3Hsg4xenhTIsvBJKD-SG4CuO1Le2JIJ-V3UN562CZcKHg8mgY7Iv64gXzUegXK1blLaHbqJYDdbUUmDsV5w_-CVhzinFntX4wZRtfCW_5MyXp-tFGLzQqziUzD6M0M_etv8u_mg3fcW9oF88tJumfM8qRoPYEiYZ9UWtI01VwCJEPUEgEKzJ3Z0YYUNnmdNEX8xo48m4h1pG8BR4pYnS35lwAATM9xcb4KjUcSe9ZPhz8TZOXZn7IzLh-FZ5rRxY-BoTWzsza0Kex163adH0534eWCFw6WSUApCPtktyHouuV4-Ni58CiCllUOY1SAQ5dLxFDftj50HI25qr0EROnWbR3UKsA2JfZMNuH/manifest.json"
 
     val sources: List<HubSource> = listOf(
         HubSource("vixsrc", "VixSrc") { VixSrcProvider() },
@@ -69,6 +72,7 @@ object HubSettings {
     fun init(context: Context) {
         prefs = context.applicationContext.getSharedPreferences("prisynx_hub", Context.MODE_PRIVATE)
         ProviderOptions.torrentMaxResults = torrentMax
+        ProviderOptions.syncedOnly = syncedOnly
     }
 
     private fun bool(key: String, def: Boolean) = prefs?.getBoolean(key, def) ?: def
@@ -119,14 +123,52 @@ object HubSettings {
         get() = bool("topx_first", true)
         set(value) = setBool("topx_first", value)
 
+    /** Landscape (16:9) TopX covers in horizontal rows instead of portrait posters. */
+    var topxLandscape: Boolean
+        get() = bool("topx_landscape", false)
+        set(value) = setBool("topx_landscape", value)
+
+    fun defaultTopxUrl(landscape: Boolean = topxLandscape) =
+        if (landscape) DEFAULT_TOPX_LANDSCAPE else DEFAULT_TOPX_PORTRAIT
+
+    fun topxUrlFor(landscape: Boolean): String {
+        val key = if (landscape) "topx_url_landscape" else "topx_url_portrait"
+        return prefs?.getString(key, null)?.takeIf { it.isNotBlank() } ?: defaultTopxUrl(landscape)
+    }
+
+    /** Manifest of the selected style (portrait or landscape). */
     var topxUrl: String
-        get() = prefs?.getString("topx_url", null)?.takeIf { it.isNotBlank() } ?: DEFAULT_TOPX_URL
+        get() = topxUrlFor(topxLandscape)
         set(value) {
-            prefs?.edit()?.putString("topx_url", value.trim())?.apply()
+            val key = if (topxLandscape) "topx_url_landscape" else "topx_url_portrait"
+            prefs?.edit()?.putString(key, value.trim())?.apply()
         }
+
+    /** Landscape manifest, used for the title backdrop when a TopX card is opened. */
+    val topxLandscapeUrl: String get() = topxUrlFor(true)
 
     fun isTopxCatalogEnabled(key: String) = bool("topx_cat_$key", true)
     fun setTopxCatalogEnabled(key: String, on: Boolean) = setBool("topx_cat_$key", on)
+
+    fun <T> orderTopx(catalogs: List<T>, key: (T) -> String): List<T> {
+        val saved = prefs?.getString("topx_order", null)?.split(',')?.filter { it.isNotBlank() } ?: emptyList()
+        val byKey = catalogs.associateBy(key)
+        val ordered = saved.mapNotNull { byKey[it] }
+        return ordered + catalogs.filter { it !in ordered }
+    }
+
+    fun saveTopxOrder(keys: List<String>) {
+        prefs?.edit()?.putString("topx_order", keys.joinToString(","))?.apply()
+    }
+
+    // ------------------------------------------------------------ MovyITA / DualSync
+
+    var syncedOnly: Boolean
+        get() = bool("synced_only", true)
+        set(value) {
+            setBool("synced_only", value)
+            ProviderOptions.syncedOnly = value
+        }
 
     // ------------------------------------------------------------ RaiPlay
 
@@ -183,5 +225,6 @@ object HubSettings {
     fun resetAll() {
         prefs?.edit()?.clear()?.apply()
         ProviderOptions.torrentMaxResults = ProviderOptions.DEFAULT_TORRENT_MAX
+        ProviderOptions.syncedOnly = true
     }
 }

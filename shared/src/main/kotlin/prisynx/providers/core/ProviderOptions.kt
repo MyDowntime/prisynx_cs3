@@ -6,4 +6,8 @@ object ProviderOptions {
 
     @Volatile
     var torrentMaxResults: Int = DEFAULT_TORRENT_MAX
+
+    /** MovyITA/DualSync: only the ITA links whose audio offset is known and applied. */
+    @Volatile
+    var syncedOnly: Boolean = true
 }

@@ -116,7 +116,14 @@ class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
     }
 
     override suspend fun load(url: String): LoadResponse {
-        if (MediaRef.parse(url) != null || KitsuRef.parse(url) != null) return super.load(url)
+        val ref = MediaRef.parse(url)
+        if (ref != null && url.endsWith(TopX.FROM_TOPX)) {
+            // Opened from a TopX row: use the TopX landscape cover as backdrop.
+            return super.load(url).apply {
+                backgroundPosterUrl = TopX.backdropFor(ref.isTv, ref.id, HubSettings.topxLandscapeUrl)
+            }
+        }
+        if (ref != null || KitsuRef.parse(url) != null) return super.load(url)
         return RaiHub.api.load(url)
             ?: throw com.lagradost.cloudstream3.ErrorLoadingException("RaiPlay: contenuto non disponibile")
     }
@@ -135,14 +142,25 @@ class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
 
     private suspend fun topxRows(): List<HomePageList> {
         val url = HubSettings.topxUrl
-        val catalogs = TopX.catalogs(url).filter { HubSettings.isTopxCatalogEnabled(it.key) }
+        val landscape = HubSettings.topxLandscape
+        val landscapeManifest = HubSettings.topxLandscapeUrl
+        val catalogs = HubSettings.orderTopx(TopX.catalogs(url)) { it.key }
+            .filter { HubSettings.isTopxCatalogEnabled(it.key) }
         val gate = Semaphore(6)
         return coroutineScope {
             catalogs.map { catalog ->
                 async {
                     gate.withPermit {
-                        val cards = TopX.items(url, catalog).map { card(it) }
-                        if (cards.isEmpty()) null else HomePageList(catalog.label, cards)
+                        val cards = TopX.items(url, catalog).map { item ->
+                            TopX.rememberBackdrop(
+                                item,
+                                if (landscape && item.poster != null) item.poster
+                                else TopX.landscapeCover(landscapeManifest, item)
+                            )
+                            card(item)
+                        }
+                        if (cards.isEmpty()) null
+                        else HomePageList(catalog.label, cards, isHorizontalImages = landscape)
                     }
                 }
             }.awaitAll().filterNotNull()
@@ -151,13 +169,14 @@ class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
 
     private suspend fun card(item: TopxItem): SearchResponse {
         val ref = MediaRef(item.tmdbId, item.isTv)
+        val url = ref.asWebUrl() + TopX.FROM_TOPX
         return if (item.isTv) {
-            newTvSeriesSearchResponse(item.title, ref.asWebUrl(), TvType.TvSeries, fix = false) {
+            newTvSeriesSearchResponse(item.title, url, TvType.TvSeries, fix = false) {
                 posterUrl = item.poster
                 year = item.year
             }
         } else {
-            newMovieSearchResponse(item.title, ref.asWebUrl(), TvType.Movie, fix = false) {
+            newMovieSearchResponse(item.title, url, TvType.Movie, fix = false) {
                 posterUrl = item.poster
                 year = item.year
             }

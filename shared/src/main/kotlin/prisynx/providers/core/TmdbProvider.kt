@@ -258,7 +258,7 @@ abstract class TmdbProvider(
     private fun recommendationsOf(d: JsonNode, isTv: Boolean): List<SearchResponse> =
         d.path("recommendations").path("results").take(20).mapNotNull { cardOf(it, isTv) }
 
-    private fun scoreOf(node: JsonNode): Score? =
+    protected fun scoreOf(node: JsonNode): Score? =
         node.path("vote_average").asDouble(0.0).takeIf { it > 0 }?.let { Score.from10(it) }
 
     /** Italian overview is often missing: fall back to the English one. */
@@ -322,11 +322,13 @@ abstract class TmdbProvider(
             newTvSeriesSearchResponse(title, ref.asWebUrl(), TvType.TvSeries, fix = false) {
                 posterUrl = poster.takeIf { it.isNotBlank() }?.let { IMG_500 + it }
                 year = date.take(4).toIntOrNull()
+                score = scoreOf(node)
             }
         } else {
             newMovieSearchResponse(title, ref.asWebUrl(), TvType.Movie, fix = false) {
                 posterUrl = poster.takeIf { it.isNotBlank() }?.let { IMG_500 + it }
                 year = date.take(4).toIntOrNull()
+                score = scoreOf(node)
             }
         }
     }

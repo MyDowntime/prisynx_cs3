@@ -126,10 +126,12 @@ Dal pulsante ⚙️ dell'estensione (*Impostazioni → Estensioni → PriSynx*) 
 | :--- | :--- |
 | **Provider** | OK su una riga = ON/OFF; ▲/▼ a destra per l'ordine dei link; *Attiva tutti* / *Disattiva tutti* |
 | **Home** | Ordine delle sezioni (TopX, TMDB, Anime Kitsu, RaiPlay) e righe TMDB: Tendenze, Film/Serie popolari, Film/Serie più votati (attive di default), Al cinema, In arrivo, Serie in onda |
-| **TopX** | Mostrare/nascondere TopX e i singoli cataloghi, cambiare o ripristinare l'URL del manifest |
+| **TopX** | Mostrare/nascondere TopX, **stile Portrait o Landscape** (copertine fresh verticali o orizzontali, con un manifest per stile), cambiare/ripristinare l'URL del manifest dello stile attivo, mostrare/nascondere i singoli cataloghi e **ordinarli** con ▲ ▼ |
 | **Anime** | Anime dal catalogo **Kitsu** (righe in home: tendenza, in corso, più popolari, più votati; risultati nella ricerca) e opzione per nascondere gli anime giapponesi da TMDB |
 | **RaiPlay** | Righe RaiPlay in home e risultati RaiPlay nella ricerca (ON/OFF), scelta delle singole righe RaiPlay |
-| **Altro** | Numero massimo di torrent IlCorsaroViola (default 3: prima il 4K e il Full HD con più seed), ripristino impostazioni |
+| **Altro** | Numero massimo di torrent IlCorsaroViola (default 3: prima il 4K e il Full HD con più seed), **Movy/DualSync: solo link sincronizzati** (default ON), ripristino impostazioni |
+
+Locandine: le card TMDB e Kitsu mostrano il voto (TMDB / IMDb) se la versione di CloudStream lo supporta. Aprendo un titolo da una riga **TopX**, lo sfondo della pagina è la copertina TopX landscape; dalle righe TMDB resta lo sfondo TMDB.
 
 **Anime con Kitsu**: TMDB raggruppa gli anime in stagioni/episodi diversi da quelli dei siti anime (es. *Jujutsu Kaisen* S2E1 diventava l'episodio 25), quindi molti episodi non si trovavano. Kitsu ha una scheda per ogni stagione/cour con la stessa numerazione di AnimeUnity, AnimeSaturn e AnimeWorld: aprendo un anime dalle righe o dalla ricerca Kitsu, PriSynx interroga solo queste tre sorgenti (nell'ordine scelto) con l'ID Kitsu. Le pagine mostrano poster, sfondo, logo, trama in italiano (da TMDB, se c'è), trailer, titoli e miniature degli episodi, e i titoli collegati (sequel/prequel). Di default gli anime giapponesi non compaiono più nei cataloghi e nella ricerca TMDB (si può riattivare dalla scheda *Anime*). Anche il percorso TMDB è più tollerante: se l'episodio mappato non esiste, viene riprovato col numero originale.
 
@@ -146,6 +148,8 @@ Per ogni qualità compaiono due link:
 
 - **`… ITA <badge>`**: video originale + audio italiano VixSrc (e sottotitoli VixSrc) in un unico flusso. Se l'offset è misurato viene **applicato in automatico**: niente da regolare.
 - **`… solo video`**: il solo video con l'audio originale, utile se il link ITA non parte o se usi un player esterno.
+
+> **Solo link sincronizzati (default)**: MovyITA e DualSync mostrano solo i link ITA con offset già misurato e applicato (`🔊✅ in sync` o `⏱️ … auto`). Niente `solo video`, niente `da misurare`/`in coda`/`⛔`. Se un titolo non ha ancora la misura, la richiesta parte lo stesso verso AutoSync: riapri più tardi. Nel hub si disattiva da *Impostazioni → Altro*.
 
 Come scegliere:
 
@@ -179,7 +183,7 @@ Sorgente basata su IMDb (film e serie) con stream HLS fino a 4K. I token del CDN
 
 **Note e limiti**
 
-- **Auto-sync audio su CloudStream** (MovyITA/DualSync): l'offset misurato da ToastFlix/AutoSync viene applicato automaticamente. CloudStream non ha un ritardo audio, quindi la traccia italiana VixSrc passa da un mini-server HTTP di loopback che riscrive i timestamp (PTS/PCR) dei segmenti TS e aggiunge silenzio iniziale; anche i sottotitoli VixSrc vengono traslati. Video e audio sono uniti in un unico master HLS. Il nome del link mostra lo stato: `🔊✅ in sync`, `⏱️ +1,275 s auto` (offset applicato), `⏳ da misurare` / `in coda` / `⚙️ in calcolo` (misurazione richiesta ad AutoSync: riapri il titolo più tardi), `⛔ tagli` / `versioni diverse` (non sincronizzabile), `⚠️ … · player esterno` (offset oltre 60 s). Resta anche il fallback “solo video”.
+- **Auto-sync audio su CloudStream** (MovyITA/DualSync): l'offset misurato da ToastFlix/AutoSync viene applicato automaticamente. CloudStream non ha un ritardo audio, quindi la traccia italiana VixSrc passa da un mini-server HTTP di loopback che riscrive i timestamp (PTS/PCR) dei segmenti TS e aggiunge silenzio iniziale; anche i sottotitoli VixSrc vengono traslati. Video e audio sono uniti in un unico master HLS. Il nome del link mostra lo stato: `🔊✅ in sync`, `⏱️ +1,275 s auto` (offset applicato), `⏳ da misurare` / `in coda` / `⚙️ in calcolo` (misurazione richiesta ad AutoSync: riapri il titolo più tardi), `⛔ tagli` / `versioni diverse` (non sincronizzabile), `⚠️ … · player esterno` (offset oltre 60 s). Con *solo link sincronizzati* (default) vengono mostrati solo i link `in sync` o con offset `auto`.
 - I provider che usano `clicka.cc` (Eurostreaming/CB01) risolvono la sorgente MaxStream/uprot; i server MixDrop/Turbovid/DeltaBit dietro clicka non sono inclusi.
 - Le pagine “cartella” di CB01/Eurostreaming non vengono seguite.
 - Alcuni host (Filmez, OnlineSerieTV, CB01, Eurostreaming) possono richiedere il worker captcha e degradare se il servizio non è raggiungibile.

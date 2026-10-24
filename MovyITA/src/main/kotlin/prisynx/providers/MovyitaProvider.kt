@@ -8,6 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import prisynx.providers.core.AudioSync
+import prisynx.providers.core.ProviderOptions
 import prisynx.providers.core.MediaMeta
 import prisynx.providers.core.MediaRef
 import prisynx.providers.core.TmdbProvider
@@ -147,13 +148,16 @@ class MovyitaProvider : TmdbProvider("MovyITA", "https://www.movy.sx") {
         sources.indices.sortedByDescending { sources[it].quality }.forEach { i ->
             val source = sources[i]
             val sync = syncs[i]
-            if (audio != null && tracks != null) {
+            val syncedOnly = ProviderOptions.syncedOnly
+            if (audio != null && tracks != null && (!syncedOnly || sync.delayMs != null)) {
                 val delay = sync.delayMs
-                val (itaAudio, itaSubs) = if (delay != null && delay != 0) {
-                    vixDelayedTracks(audio, vixSubs, tracks.headers, delay) ?: (audio to vixSubs)
+                val shifted = if (delay != null && delay != 0) {
+                    vixDelayedTracks(audio, vixSubs, tracks.headers, delay)
                 } else {
                     audio to vixSubs
                 }
+                if (shifted == null && syncedOnly) return@forEach
+                val (itaAudio, itaSubs) = shifted ?: (audio to vixSubs)
                 emit(
                     callback = callback,
                     url = publishCombinedMaster(source.url, source.quality, itaAudio, itaSubs + subtitles),
@@ -164,6 +168,7 @@ class MovyitaProvider : TmdbProvider("MovyITA", "https://www.movy.sx") {
                     headers = headers
                 )
             }
+            if (syncedOnly) return@forEach
             emit(
                 callback = callback,
                 url = source.url,

@@ -50,6 +50,7 @@ object HubSettingsDialog {
         val tabViews = mutableListOf<TextView>()
         var current = -1
         var generation = 0
+        var pendingFocus: String? = null
         val main = Handler(Looper.getMainLooper())
     }
 
@@ -175,10 +176,11 @@ object HubSettingsDialog {
         select(ui, ui.current, force = true)
         ui.scroll.post {
             ui.scroll.scrollTo(0, y)
-            focusTags.asSequence()
+            val target = focusTags.asSequence()
                 .mapNotNull { ui.content.findViewWithTag<View>(it) }
                 .firstOrNull { it.isFocusable }
-                ?.requestFocus()
+            // Rows of async lists do not exist yet: focus them once loaded.
+            if (target != null) target.requestFocus() else ui.pendingFocus = focusTags.firstOrNull()
         }
     }
 
@@ -284,15 +286,25 @@ object HubSettingsDialog {
             get = { HubSettings.topxEnabled },
             set = { HubSettings.topxEnabled = it }
         ), rowParams(c))
+        val landscape = HubSettings.topxLandscape
+        ui.content.addView(actionRow(c,
+            "Stile copertine: " + if (landscape) "Landscape (orizzontali)" else "Portrait (verticali)",
+            "OK per passare a " + if (landscape) "Portrait" else "Landscape"
+        ) {
+            HubSettings.topxLandscape = !HubSettings.topxLandscape
+            TopX.clearCache()
+            refresh(ui, "topx_style")
+        }.apply { tag = "topx_style" }, rowParams(c))
         val url = HubSettings.topxUrl
-        val custom = url != HubSettings.DEFAULT_TOPX_URL
-        ui.content.addView(actionRow(c, "Modifica URL manifest",
+        val custom = url != HubSettings.defaultTopxUrl()
+        val styleName = if (landscape) "landscape" else "portrait"
+        ui.content.addView(actionRow(c, "Modifica URL manifest $styleName",
             if (custom) "Personalizzato: ${shorten(url)}" else "Predefinito PriSynx") {
             editUrl(ui)
         }, rowParams(c))
         if (custom) {
-            ui.content.addView(actionRow(c, "Ripristina URL predefinito", null) {
-                HubSettings.topxUrl = HubSettings.DEFAULT_TOPX_URL
+            ui.content.addView(actionRow(c, "Ripristina URL $styleName predefinito", null) {
+                HubSettings.topxUrl = HubSettings.defaultTopxUrl()
                 TopX.clearCache()
                 refresh(ui)
             }, rowParams(c))
@@ -302,13 +314,64 @@ object HubSettingsDialog {
             refresh(ui)
         }, rowParams(c))
 
-        heading(ui, "Cataloghi", null)
-        asyncList(ui,
-            load = { runBlocking { TopX.catalogs(HubSettings.topxUrl) }.map { it.key to it.label } },
-            isOn = { HubSettings.isTopxCatalogEnabled(it) },
-            setOn = { key, on -> HubSettings.setTopxCatalogEnabled(key, on) },
-            empty = "Nessun catalogo trovato: controlla l'URL o la connessione."
-        )
+        heading(ui, "Cataloghi", "OK = mostra/nascondi · ▲ ▼ = ordine in home")
+        val box = LinearLayout(c).apply { orientation = LinearLayout.VERTICAL }
+        box.addView(note(c, "Caricamento…"))
+        ui.content.addView(box)
+        val gen = ui.generation
+        Thread {
+            val catalogs = try {
+                runBlocking { TopX.catalogs(HubSettings.topxUrl) }
+            } catch (e: Exception) {
+                emptyList()
+            }
+            ui.main.post {
+                if (gen != ui.generation) return@post
+                box.removeAllViews()
+                if (catalogs.isEmpty()) {
+                    box.addView(note(c, "Nessun catalogo trovato: controlla l'URL o la connessione."))
+                    return@post
+                }
+                val ordered = HubSettings.orderTopx(catalogs) { it.key }
+                val bulk = LinearLayout(c).apply { orientation = LinearLayout.HORIZONTAL }
+                bulk.addView(actionRow(c, "Mostra tutti", null) {
+                    catalogs.forEach { HubSettings.setTopxCatalogEnabled(it.key, true) }
+                    refresh(ui, "topx_all")
+                }.apply { tag = "topx_all" }, weightParams(c, right = 8))
+                bulk.addView(actionRow(c, "Nascondi tutti", null) {
+                    catalogs.forEach { HubSettings.setTopxCatalogEnabled(it.key, false) }
+                    refresh(ui, "topx_none")
+                }.apply { tag = "topx_none" }, weightParams(c, left = 8))
+                box.addView(bulk, rowParams(c))
+                ordered.forEachIndexed { index, catalog ->
+                    box.addView(orderRow(
+                        ui,
+                        tagPrefix = "topx_${catalog.key}",
+                        title = "${index + 1}.  ${catalog.label}",
+                        on = { HubSettings.isTopxCatalogEnabled(catalog.key) },
+                        toggle = {
+                            HubSettings.setTopxCatalogEnabled(catalog.key, !HubSettings.isTopxCatalogEnabled(catalog.key))
+                        },
+                        canUp = index > 0,
+                        canDown = index < ordered.lastIndex,
+                        move = { delta ->
+                            val keys = ordered.map { it.key }.toMutableList()
+                            val from = keys.indexOf(catalog.key)
+                            val to = from + delta
+                            if (from >= 0 && to in keys.indices) {
+                                keys.add(to, keys.removeAt(from))
+                                HubSettings.saveTopxOrder(keys)
+                            }
+                        }
+                    ), rowParams(c))
+                }
+                linkTabsToContent(ui)
+                ui.pendingFocus?.let { tag ->
+                    ui.pendingFocus = null
+                    box.findViewWithTag<View>(tag)?.takeIf { it.isFocusable }?.requestFocus()
+                }
+            }
+        }.start()
     }
 
     private fun editUrl(ui: Ui) {
@@ -324,10 +387,10 @@ object HubSettingsDialog {
             addView(input)
         }
         AlertDialog.Builder(c)
-            .setTitle("URL manifest TopX")
+            .setTitle(if (HubSettings.topxLandscape) "URL manifest TopX landscape" else "URL manifest TopX portrait")
             .setView(box)
             .setPositiveButton("Salva") { _, _ ->
-                HubSettings.topxUrl = input.text.toString().ifBlank { HubSettings.DEFAULT_TOPX_URL }
+                HubSettings.topxUrl = input.text.toString().ifBlank { HubSettings.defaultTopxUrl() }
                 TopX.clearCache()
                 refresh(ui)
             }
@@ -393,6 +456,13 @@ object HubSettingsDialog {
         ui.content.addView(stepperRow(ui, "Risultati torrent", { HubSettings.torrentMax }) {
             HubSettings.torrentMax = HubSettings.torrentMax + it
         }, rowParams(c))
+
+        heading(ui, "MovyITA e DualSync", "Audio italiano VixSrc sul video Movy/Cinejoy.")
+        ui.content.addView(toggleRow(c, "Solo link sincronizzati",
+            "Mostra solo i link ITA con offset calcolato e applicato (niente \"solo video\" né \"da misurare\")",
+            get = { HubSettings.syncedOnly },
+            set = { HubSettings.syncedOnly = it }
+        ), rowParams(c))
 
         heading(ui, "Ripristino", null)
         ui.content.addView(actionRow(c, "Ripristina impostazioni predefinite",

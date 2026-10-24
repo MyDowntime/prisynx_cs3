@@ -109,15 +109,18 @@ fun TmdbProvider.kitsuCard(node: JsonNode): SearchResponse? {
     val year = node.path("releaseInfo").asText("").take(4).toIntOrNull()
     val movie = Kitsu.isMovie(node)
     val url = KitsuRef(id, isMovie = movie).asWebUrl()
+    val rating = node.path("imdbRating").asText("").toDoubleOrNull()?.takeIf { it > 0 }?.let { Score.from10(it) }
     return if (movie) {
         newMovieSearchResponse(title, url, TvType.AnimeMovie, fix = false) {
             posterUrl = poster
             this.year = year
+            score = rating
         }
     } else {
         newAnimeSearchResponse(title, url, TvType.Anime, fix = false) {
             posterUrl = poster
             this.year = year
+            score = rating
         }
     }
 }

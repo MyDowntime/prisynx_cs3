@@ -77,6 +77,36 @@ object TopX {
         return list
     }
 
+    /** Cards opened from a TopX row: TMDB key ("movie:1"/"tv:1") -> landscape cover. */
+    private val backdrops = HashMap<String, String>()
+
+    const val FROM_TOPX = "?src=topx"
+
+    fun refKey(isTv: Boolean, tmdbId: Int) = (if (isTv) "tv:" else "movie:") + tmdbId
+
+    /** Landscape version of a TopX cover, rendered with the landscape manifest. */
+    fun landscapeCover(landscapeManifest: String, item: TopxItem): String {
+        val base = baseOf(landscapeManifest)
+        val poster = item.poster.orEmpty()
+        val query = if (poster.contains("/top-cover?")) {
+            poster.substringAfter("/top-cover?").replace("shape=poster", "shape=landscape")
+        } else {
+            "type=${if (item.isTv) "tv" else "movie"}&tmdbId=${item.tmdbId}&shape=landscape" +
+                "&canvasBackground=fresh&showMeta=true&showLogo=true&country=it&v=fresh-v9"
+        }
+        return "$base/top-cover?$query"
+    }
+
+    fun rememberBackdrop(item: TopxItem, url: String) = synchronized(backdrops) {
+        backdrops[refKey(item.isTv, item.tmdbId)] = url
+    }
+
+    fun backdropFor(isTv: Boolean, tmdbId: Int, landscapeManifest: String): String =
+        synchronized(backdrops) { backdrops[refKey(isTv, tmdbId)] } ?: landscapeCover(
+            landscapeManifest,
+            TopxItem(tmdbId, isTv, "", null, null)
+        )
+
     fun clearCache() {
         manifestCache = null
         synchronized(catalogCache) { catalogCache.clear() }
