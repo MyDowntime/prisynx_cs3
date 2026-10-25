@@ -2,6 +2,7 @@ package prisynx.hub
 
 import android.content.Context
 import android.content.SharedPreferences
+import prisynx.providers.core.DebridSettings
 import prisynx.providers.core.ProviderOptions
 import prisynx.providers.AltadefinizioneProvider
 import prisynx.providers.AnimeSaturnProvider
@@ -73,6 +74,7 @@ object HubSettings {
 
     fun init(context: Context) {
         prefs = context.applicationContext.getSharedPreferences("prisynx_hub", Context.MODE_PRIVATE)
+        DebridSettings.attach(context)
         ProviderOptions.torrentMaxResults = torrentMax
         ProviderOptions.syncedOnly = syncedOnly
     }
@@ -246,5 +248,6 @@ object HubSettings {
         prefs?.edit()?.clear()?.apply()
         ProviderOptions.torrentMaxResults = ProviderOptions.DEFAULT_TORRENT_MAX
         ProviderOptions.syncedOnly = true
+        DebridSettings.reset()
     }
 }

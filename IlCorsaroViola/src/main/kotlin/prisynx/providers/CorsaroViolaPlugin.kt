@@ -1,11 +1,16 @@
 package prisynx.providers
 
-import com.lagradost.cloudstream3.plugins.BasePlugin
+import android.content.Context
 import com.lagradost.cloudstream3.plugins.CloudstreamPlugin
+import com.lagradost.cloudstream3.plugins.Plugin
+import prisynx.providers.core.DebridSettings
+import prisynx.providers.core.DebridSettingsDialog
 
 @CloudstreamPlugin
-class CorsaroViolaPlugin : BasePlugin() {
-    override fun load() {
+class CorsaroViolaPlugin : Plugin() {
+    override fun load(context: Context) {
+        DebridSettings.attach(context)
+        openSettings = { ctx -> DebridSettingsDialog.show(ctx) }
         registerMainAPI(CorsaroViolaProvider())
     }
 }

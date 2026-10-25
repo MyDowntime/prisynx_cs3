@@ -1,11 +1,28 @@
+repositories {
+    // The CloudStream app classes (including the Plugin base class used for the
+    // settings button) are not shipped in the library AAR. The official
+    // pre-release publishes them as classes.jar; pull it as compileOnly so the
+    // app classes are never packaged inside the .cs3.
+    ivy {
+        url = uri("https://github.com/recloudstream/cloudstream/releases/download/pre-release")
+        patternLayout { artifact("[artifact].[ext]") }
+        metadataSources { artifact() }
+        content { includeModule("cloudstream", "classes") }
+    }
+}
+
 android {
     sourceSets.getByName("main").java.srcDir(rootProject.file("shared/src/main/kotlin"))
 }
 
-version = 3
+version = 4
+
+dependencies {
+    compileOnly("cloudstream:classes:pre-release@jar")
+}
 
 cloudstream {
-    description = "IlCorsaroViola: torrent P2P con seeders e formati 4K/1080p."
+    description = "IlCorsaroViola: torrent P2P con seeders e formati 4K/1080p; con Real-Debrid, AllDebrid o TorBox i torrent in cache diventano link diretti."
     authors = listOf("PriSynx")
     status = 1
     tvTypes = listOf("Movie", "TvSeries")

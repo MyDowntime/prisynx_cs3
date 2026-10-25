@@ -4,6 +4,8 @@ import android.util.Base64
 import com.lagradost.cloudstream3.SubtitleFile
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
+import prisynx.providers.core.Debrid
+import prisynx.providers.core.DebridSettings
 import prisynx.providers.core.MediaMeta
 import prisynx.providers.core.MediaRef
 import prisynx.providers.core.ProviderOptions
@@ -13,6 +15,9 @@ import prisynx.providers.core.enc
 import prisynx.providers.core.json
 import prisynx.providers.core.net
 import prisynx.providers.core.qualityFromText
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 /**
  * IlCorsaroViola: P2P index. CloudStream supports MAGNET links, so the plugin
@@ -73,21 +78,45 @@ class CorsaroViolaProvider : TmdbProvider("IlCorsaroViola", "https://corsaroviol
         all.forEach { if (picked.size < max) picked.add(it) }
         val chosen = picked.take(max).sortedByDescending { it.seeders }
 
+        // With a debrid service configured, cached torrents become direct links.
+        // Resolved in parallel so three magnets do not triple the wait.
+        val direct = if (DebridSettings.active()) {
+            coroutineScope {
+                chosen.map { async { Debrid.resolve(it.magnet) } }.awaitAll()
+            }
+        } else {
+            List(chosen.size) { null }
+        }
+        val tag = DebridSettings.shortLabel(DebridSettings.service)
+
         var emitted = 0
-        for (t in chosen) {
+        for ((index, t) in chosen.withIndex()) {
             val italian = Regex("ita|italian|italiano", RegexOption.IGNORE_CASE).containsMatchIn(t.title)
             val label = "IlCorsaroViola ${if (t.quality > 0) "${t.quality}p" else "HD"} " +
                 (if (italian) "\uD83C\uDDEE\uD83C\uDDF9" else "\uD83C\uDDEC\uD83C\uDDE7") +
                 " \u00B7 ${t.seeders} seed" + (if (t.size > 0) " \u00B7 ${t.size / (1024 * 1024)} MB" else "")
-            emit(
-                callback = callback,
-                url = t.magnet,
-                label = label,
-                quality = t.quality,
-                type = ExtractorLinkType.MAGNET,
-                referer = "",
-                headers = emptyMap()
-            )
+            val link = direct.getOrNull(index)
+            if (link != null) {
+                emit(
+                    callback = callback,
+                    url = link.url,
+                    label = "$label \u00B7 $tag",
+                    quality = t.quality,
+                    type = ExtractorLinkType.VIDEO,
+                    referer = "",
+                    headers = emptyMap()
+                )
+            } else {
+                emit(
+                    callback = callback,
+                    url = t.magnet,
+                    label = label,
+                    quality = t.quality,
+                    type = ExtractorLinkType.MAGNET,
+                    referer = "",
+                    headers = emptyMap()
+                )
+            }
             emitted++
         }
         return emitted > 0
