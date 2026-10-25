@@ -1,29 +1,5 @@
 [
   {
-    "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/KissKH.png",
-    "fileHash": "sha256-7042a3c3371897f57f5b91b4c75c3bd884102322b5d06f4e7110a62354c1471c",
-    "apiVersion": 1,
-    "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 189143,
-    "status": 1,
-    "language": "it",
-    "authors": [
-      "PriSynx"
-    ],
-    "tvTypes": [
-      "AsianDrama",
-      "TvSeries",
-      "Movie",
-      "Anime",
-      "AnimeMovie"
-    ],
-    "version": 3,
-    "internalName": "KissKH",
-    "description": "Catalogo KissKH nativo, drama e film asiatici con sottotitoli ITA/ENG e traduzione DeepL opzionale.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH.cs3",
-    "name": "KissKH"
-  },
-  {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/PriSynx.png",
     "fileHash": "sha256-d3fef4720dd9d3c5fcb69ff2dbe4c52a8edaf70d69e952ec6deb712fd021a283",
     "apiVersion": 1,
