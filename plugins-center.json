@@ -1,10 +1,34 @@
 [
   {
-    "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PriSynx.png",
-    "fileHash": "sha256-57e22ae4c7d27ef7bcfa2db97724a0ba21ee1884006256889633e2c8b635726d",
+    "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/KissKH.png",
+    "fileHash": "sha256-7042a3c3371897f57f5b91b4c75c3bd884102322b5d06f4e7110a62354c1471c",
     "apiVersion": 1,
-    "repositoryUrl": "https://github.com/qwertyuiop8899/prisynx_cs3",
-    "fileSize": 418042,
+    "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
+    "fileSize": 189143,
+    "status": 1,
+    "language": "it",
+    "authors": [
+      "PriSynx"
+    ],
+    "tvTypes": [
+      "AsianDrama",
+      "TvSeries",
+      "Movie",
+      "Anime",
+      "AnimeMovie"
+    ],
+    "version": 3,
+    "internalName": "KissKH",
+    "description": "Catalogo KissKH nativo, drama e film asiatici con sottotitoli ITA/ENG e traduzione DeepL opzionale.",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH.cs3",
+    "name": "KissKH"
+  },
+  {
+    "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/PriSynx.png",
+    "fileHash": "sha256-d3fef4720dd9d3c5fcb69ff2dbe4c52a8edaf70d69e952ec6deb712fd021a283",
+    "apiVersion": 1,
+    "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
+    "fileSize": 484778,
     "status": 1,
     "language": "it",
     "authors": [
@@ -14,19 +38,20 @@
       "Movie",
       "TvSeries",
       "Anime",
+      "AsianDrama",
       "Live"
     ],
-    "version": 8,
+    "version": 10,
     "internalName": "PriSynx",
-    "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay inclusa), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX e RaiPlay.",
-    "url": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/builds/PriSynx.cs3",
+    "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay e KissKH.",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx.cs3",
     "name": "PriSynx"
   },
   {
-    "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/RaiPlay.png",
+    "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/RaiPlay.png",
     "fileHash": "sha256-1cb562f903410af90a585d425ae567b4fc66ee6cedaa1cd52ea378d0a0342029",
     "apiVersion": 1,
-    "repositoryUrl": "https://github.com/qwertyuiop8899/prisynx_cs3",
+    "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
     "fileSize": 25893,
     "status": 1,
     "language": "it",
@@ -41,7 +66,7 @@
     "version": 3,
     "internalName": "RaiPlay",
     "description": "RaiPlay: film, serie TV, documentari e dirette Rai (catalogo ufficiale, senza DRM). Disponibile solo da Italia/Europa.",
-    "url": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/builds/RaiPlay.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/RaiPlay.cs3",
     "name": "RaiPlay"
   }
 ]
