@@ -310,15 +310,62 @@ object Debrid {
                 timeout = 25
             )
         } catch (e: Exception) {
-            return null
+            // A not cached torrent can still be converting the magnet: the
+            // selection is retried below while the torrent becomes ready.
         }
 
         pending[hash] = Pending("realdebrid", key, id)
+        val selectLimit = if (waitMs == 0L) 8_000L else minOf(waitMs, 20_000L)
+        rdSelectFiles(headers, id, cachedFile?.first ?: "all", selectLimit)
         return realDebridReady(key, id, if (waitMs == 0L) 4_000L else waitMs)
+    }
+
+    /**
+     * Real-Debrid only accepts selectFiles once the magnet conversion is done.
+     * Waits for that state and retries, so a not cached torrent actually starts
+     * downloading instead of staying in "waiting_files_selection".
+     */
+    private suspend fun rdSelectFiles(
+        headers: Map<String, String>,
+        id: String,
+        files: String,
+        limitMs: Long
+    ): Boolean {
+        val deadline = System.currentTimeMillis() + limitMs
+        while (true) {
+            val info = try {
+                json.readTree(
+                    net.get("$RD_API/torrents/info/$id", headers = headers, timeout = 20).text
+                )
+            } catch (e: Exception) {
+                null
+            }
+            when (info?.path("status")?.asText("").orEmpty()) {
+                "waiting_files_selection" -> {
+                    val ok = runCatching {
+                        net.post(
+                            "$RD_API/torrents/selectFiles/$id",
+                            headers = headers,
+                            data = null,
+                            requestBody = FormBody.Builder().add("files", files).build(),
+                            timeout = 25
+                        )
+                    }.isSuccess
+                    if (ok) return true
+                }
+
+                "downloading", "downloaded", "queued", "compressing", "uploading" -> return true
+                "magnet_error", "error", "dead", "virus" -> return false
+            }
+            if (System.currentTimeMillis() >= deadline) return false
+            delay(700)
+        }
     }
 
     private suspend fun realDebridReady(key: String, id: String, limitMs: Long): DebridLink? {
         val headers = mapOf("Authorization" to "Bearer $key")
+        // A pending torrent may still be waiting for the file selection.
+        rdSelectFiles(headers, id, "all", minOf(limitMs, 8_000L))
         val link = waitForLink(limitMs) {
             val info = json.readTree(
                 net.get("$RD_API/torrents/info/$id", headers = headers, timeout = 20).text
