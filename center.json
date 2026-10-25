@@ -3,6 +3,6 @@
   "description": "PriSynx Center: un'unica estensione con tutti i provider, RaiPlay e KissKH integrati, con menu ⚙️ per TV (provider on/off e ordine, cataloghi TMDB, TopX, anime, righe RaiPlay e KissKH, debrid per IlCorsaroViola, max torrent). KissKH non è elencato a parte nel Center: c'è dentro PriSynx. RaiPlay e KissKH restano disponibili come estensioni separate (facoltative).",
   "manifestVersion": 1,
   "pluginLists": [
-    "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/builds/plugins-center.json"
+    "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/plugins-center.json"
   ]
 }
