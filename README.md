@@ -130,12 +130,12 @@ Dal pulsante ⚙️ dell'estensione (*Impostazioni → Estensioni → PriSynx*) 
 | **Anime** | Anime dal catalogo **Kitsu** (righe in home: tendenza, in corso, più popolari, più votati; risultati nella ricerca) e opzione per nascondere gli anime giapponesi da TMDB |
 | **RaiPlay** | Righe RaiPlay in home e risultati RaiPlay nella ricerca (ON/OFF), scelta delle singole righe RaiPlay |
 | **KissKH** | Righe KissKH in home e risultati KissKH nella ricerca (ON/OFF), scelta dei cataloghi (drama/film coreani, giapponesi, thailandesi, anime) e impostazioni KissKH (URL, chiave DeepL, lingua di traduzione, filtro adulti) |
-| **Debrid** | Sblocco dei magnet di **IlCorsaroViola** in link diretti con **Real-Debrid**, **AllDebrid** o **TorBox**: scelta del servizio, chiave API (con verifica dell'account) e ON/OFF. Vengono usati solo i torrent già in cache sul servizio, gli altri restano magnet |
+| **Debrid** | Sblocco dei magnet di **IlCorsaroViola** in link diretti con **Real-Debrid**, **AllDebrid** o **TorBox**: scelta del servizio, chiave API (con verifica dell'account), ON/OFF e **attesa massima** del download (0/20/40/60/90/120 s) |
 | **Altro** | Numero massimo di torrent IlCorsaroViola (default 3: prima il 4K e il Full HD con più seed), **Movy/DualSync: solo link sincronizzati** (default ON), ripristino impostazioni |
 
 **KissKH nel hub**: le righe native compaiono in home (se attive) e i risultati nella ricerca; aprendo una scheda, episodi e stream vengono risolti da KissKH. La voce *Provider* include KissKH come sorgente per i titoli TMDB: si può disattivare o spostare nell'ordine come le altre.
 
-**Debrid (IlCorsaroViola)**: dalla scheda *Debrid* scegli il servizio (**Real-Debrid**, **AllDebrid** o **TorBox**), incolla la chiave API (link alla pagina delle chiavi in ogni riga) e usa *Verifica chiave* per controllare l'account. Quando un torrent è già in cache sul servizio, al posto del magnet compare il link diretto con il tag del servizio (`· RD`, `· AD`, `· TB`); gli altri torrent restano magnet, quindi la lista non resta mai in attesa di un download. La stessa schermata è disponibile come impostazioni dell'estensione singola IlCorsaroViola (ingranaggio in *Estensioni*).
+**Debrid (IlCorsaroViola)**: dalla scheda *Debrid* scegli il servizio (**Real-Debrid**, **AllDebrid** o **TorBox**), incolla la chiave API (c'è anche *Apri pagina delle chiavi* e *Verifica chiave* per controllare l'account) e regola l'**attesa massima**. I torrent già in cache diventano subito link diretti con il tag del servizio (`· RD`, `· AD`, `· TB`); gli altri vengono inviati al servizio (il magnet resta, con l'etichetta `· magnet (RD in download)`) e al tentativo successivo, quando il download è pronto, arriva il link diretto senza riaggiungere il torrent. La stessa schermata è disponibile come impostazioni dell'estensione singola IlCorsaroViola (ingranaggio in *Estensioni*).
 
 Locandine: le card TMDB e Kitsu mostrano il voto (TMDB / IMDb) se la versione di CloudStream lo supporta. Aprendo un titolo da una riga **TopX**, lo sfondo della pagina è la copertina TopX landscape; dalle righe TMDB resta lo sfondo TMDB.
 
@@ -185,7 +185,7 @@ Sorgente basata su IMDb (film e serie) con stream HLS fino a 4K. I token del CDN
 | 🇮🇹 Audio italiano | VixSrc, PaCC, anime, CB01/Eurostreaming (MaxStream/uprot), RaiPlay |
 | ⚡ 4K + audio ITA | MovyITA e DualSync combinano video 4K con la traccia VixSrc in un master HLS servito su loopback locale |
 | 🧩 Captcha uprot | Risoluzione automatica del captcha immagini tramite worker (Filmez, OnlineSerieTV, CB01, Eurostreaming) |
-| 🏴‍☠️ Torrent | IlCorsaroViola tramite link Magnet; con un servizio debrid configurato (Real-Debrid, AllDebrid, TorBox) i torrent già in cache diventano link HTTP diretti |
+| 🏴‍☠️ Torrent | IlCorsaroViola tramite link Magnet; con un servizio debrid configurato (Real-Debrid, AllDebrid, TorBox) i torrent in cache diventano link HTTP diretti e gli altri vengono inviati al servizio per i tentativi successivi |
 
 **Note e limiti**
 
