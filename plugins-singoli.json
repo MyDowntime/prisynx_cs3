@@ -17,7 +17,7 @@
     "version": 2,
     "internalName": "Altadefinizione",
     "description": "Altadefinizione: film e serie TV in streaming.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Altadefinizione.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Altadefinizione-v2.cs3",
     "name": "Altadefinizione"
   },
   {
@@ -39,7 +39,7 @@
     "version": 3,
     "internalName": "AnimeSaturn",
     "description": "AnimeSaturn: anime sub ITA e ITA con mapping TMDB.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeSaturn.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeSaturn-v3.cs3",
     "name": "AnimeSaturn"
   },
   {
@@ -61,7 +61,7 @@
     "version": 3,
     "internalName": "AnimeUnity",
     "description": "AnimeUnity: anime sub ITA e ITA con mapping TMDB.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeUnity.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeUnity-v3.cs3",
     "name": "AnimeUnity"
   },
   {
@@ -83,7 +83,7 @@
     "version": 3,
     "internalName": "AnimeWorld",
     "description": "AnimeWorld: anime sub ITA e ITA con mapping TMDB.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeWorld.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeWorld-v3.cs3",
     "name": "AnimeWorld"
   },
   {
@@ -104,7 +104,7 @@
     "version": 3,
     "internalName": "CB01",
     "description": "CB01: film e serie TV in streaming.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/CB01.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/CB01-v3.cs3",
     "name": "CB01"
   },
   {
@@ -125,7 +125,7 @@
     "version": 5,
     "internalName": "DualSync",
     "description": "DualSync: video 4K/FHD con audio ITA sincronizzato.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/DualSync.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/DualSync-v5.cs3",
     "name": "DualSync"
   },
   {
@@ -146,7 +146,7 @@
     "version": 3,
     "internalName": "Eurostreaming",
     "description": "Eurostreaming: film e serie TV in streaming.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Eurostreaming.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Eurostreaming-v3.cs3",
     "name": "Eurostreaming"
   },
   {
@@ -166,7 +166,7 @@
     "version": 2,
     "internalName": "Filmez",
     "description": "Filmez: catalogo film WordPress via MaxStream.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Filmez.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Filmez-v2.cs3",
     "name": "Filmez"
   },
   {
@@ -187,7 +187,7 @@
     "version": 3,
     "internalName": "Guardoserie",
     "description": "Guardoserie: film e serie TV dal catalogo Guardoserie.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Guardoserie.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Guardoserie-v3.cs3",
     "name": "Guardoserie"
   },
   {
@@ -208,7 +208,7 @@
     "version": 7,
     "internalName": "IlCorsaroViola",
     "description": "IlCorsaroViola: torrent P2P con seeders e formati 4K/1080p; con Real-Debrid, AllDebrid o TorBox i magnet diventano link diretti (con attesa configurabile del download).",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/IlCorsaroViola.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/IlCorsaroViola-v7.cs3",
     "name": "IlCorsaroViola"
   },
   {
@@ -232,7 +232,7 @@
     "version": 3,
     "internalName": "KissKH",
     "description": "Catalogo KissKH nativo, drama e film asiatici con sottotitoli ITA/ENG e traduzione DeepL opzionale.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH-v3.cs3",
     "name": "KissKH"
   },
   {
@@ -253,7 +253,7 @@
     "version": 5,
     "internalName": "MovyITA",
     "description": "MovyITA: film e serie TV con sorgenti VixSrc.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/MovyITA.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/MovyITA-v5.cs3",
     "name": "MovyITA"
   },
   {
@@ -274,7 +274,7 @@
     "version": 2,
     "internalName": "OnlineSerieTV",
     "description": "OnlineSerieTV: film e serie TV WordPress via MaxStream.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/OnlineSerieTV.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/OnlineSerieTV-v2.cs3",
     "name": "OnlineSerieTV"
   },
   {
@@ -295,7 +295,7 @@
     "version": 3,
     "internalName": "PaCC",
     "description": "PaCC (partite.cc): eventi sportivi in diretta e replay.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PaCC.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PaCC-v3.cs3",
     "name": "PaCC"
   },
   {
@@ -317,7 +317,7 @@
     "version": 3,
     "internalName": "RaiPlay",
     "description": "RaiPlay: film, serie TV, documentari e dirette Rai (catalogo ufficiale, senza DRM). Disponibile solo da Italia/Europa.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/RaiPlay.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/RaiPlay-v3.cs3",
     "name": "RaiPlay"
   },
   {
@@ -339,7 +339,7 @@
     "version": 2,
     "internalName": "RealTime",
     "description": "Real Time: programmi e serie TV del canale Real Time.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/RealTime.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/RealTime-v2.cs3",
     "name": "RealTime"
   },
   {
@@ -362,7 +362,7 @@
     "version": 2,
     "internalName": "Toonitalia",
     "description": "Toonitalia: cartoni animati e anime in italiano.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Toonitalia.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Toonitalia-v2.cs3",
     "name": "Toonitalia"
   },
   {
@@ -383,7 +383,7 @@
     "version": 2,
     "internalName": "VidxGo",
     "description": "VidxGo: film e serie TV (IMDb) con flussi HLS fino a 4K.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/VidxGo.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/VidxGo-v2.cs3",
     "name": "VidxGo"
   },
   {
@@ -404,7 +404,7 @@
     "version": 2,
     "internalName": "VixSrc",
     "description": "VixSrc: film e serie TV con streaming multi-qualita.",
-    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/VixSrc.cs3",
+    "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/VixSrc-v2.cs3",
     "name": "VixSrc"
   }
 ]
