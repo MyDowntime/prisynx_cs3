@@ -1,10 +1,10 @@
 [
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/PriSynx.png",
-    "fileHash": "sha256-f8215d9efb164e4ddb92409128b007c60f75a9ec866f818e2133dcfb22816b92",
+    "fileHash": "sha256-35a83a364d11160c90eac1fcfb1c568cddd40171be647ab2755c372027e9aa8c",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 510221,
+    "fileSize": 514471,
     "status": 1,
     "language": "it",
     "authors": [
