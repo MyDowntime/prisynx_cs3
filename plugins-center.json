@@ -1,10 +1,10 @@
 [
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/PriSynx.png",
-    "fileHash": "sha256-3fb02632a62c0896a3758489d0bf6102cbbb6f999259813cb2d30d42e135a412",
+    "fileHash": "sha256-53eb3e411782d4c7fb8180f54ea0d9f44bdabbf393c2dcc786736d7633233ca4",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 516499,
+    "fileSize": 519422,
     "status": 1,
     "language": "it",
     "authors": [
@@ -17,7 +17,7 @@
       "AsianDrama",
       "Live"
     ],
-    "version": 12,
+    "version": 13,
     "internalName": "PriSynx",
     "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay, KissKH e servizi debrid (con attesa del download) per IlCorsaroViola.",
     "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx.cs3",
