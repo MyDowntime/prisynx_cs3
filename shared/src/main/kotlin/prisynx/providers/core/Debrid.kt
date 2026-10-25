@@ -163,7 +163,7 @@ object Debrid {
         val inFlight = pending[hash]?.takeIf { it.service == service && it.key == key }
 
         val link = try {
-            withTimeoutOrNull(BASE_TIMEOUT + waitMs + 10_000L) {
+            withTimeoutOrNull(BASE_TIMEOUT + waitMs + 30_000L) {
                 if (inFlight != null) {
                     // Already sent: just check again, no need to wait the full time.
                     fetchPending(inFlight, if (waitMs == 0L) 3_000L else minOf(waitMs, PENDING_WAIT))
@@ -315,7 +315,7 @@ object Debrid {
         }
 
         pending[hash] = Pending("realdebrid", key, id)
-        val selectLimit = if (waitMs == 0L) 8_000L else minOf(waitMs, 20_000L)
+        val selectLimit = if (waitMs == 0L) 8_000L else minOf(waitMs, 12_000L)
         rdSelectFiles(headers, id, cachedFile?.first ?: "all", selectLimit)
         return realDebridReady(key, id, if (waitMs == 0L) 4_000L else waitMs)
     }
@@ -365,7 +365,7 @@ object Debrid {
     private suspend fun realDebridReady(key: String, id: String, limitMs: Long): DebridLink? {
         val headers = mapOf("Authorization" to "Bearer $key")
         // A pending torrent may still be waiting for the file selection.
-        rdSelectFiles(headers, id, "all", minOf(limitMs, 8_000L))
+        rdSelectFiles(headers, id, "all", minOf(limitMs, 4_000L))
         val link = waitForLink(limitMs) {
             val info = json.readTree(
                 net.get("$RD_API/torrents/info/$id", headers = headers, timeout = 20).text

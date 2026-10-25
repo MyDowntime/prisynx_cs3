@@ -1,4 +1,4 @@
-repositories {
+﻿repositories {
     // The CloudStream app classes (including the Plugin base class used for the
     // settings button) are not shipped in the library AAR. The official
     // pre-release publishes them as classes.jar; pull it as compileOnly so the
@@ -15,7 +15,7 @@ android {
     sourceSets.getByName("main").java.srcDir(rootProject.file("shared/src/main/kotlin"))
 }
 
-version = 6
+version = 7
 
 dependencies {
     compileOnly("cloudstream:classes:pre-release@jar")
