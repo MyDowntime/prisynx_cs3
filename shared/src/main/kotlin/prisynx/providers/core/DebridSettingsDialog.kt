@@ -2,10 +2,13 @@ package prisynx.providers.core
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
@@ -39,8 +42,9 @@ object DebridSettingsDialog {
 
         content.addView(TextView(context).apply {
             text = "Con un servizio debrid i magnet di IlCorsaroViola diventano link " +
-                "diretti, ma solo per i torrent già presenti in cache sul servizio: " +
-                "gli altri restano magnet. La chiave resta salvata sul dispositivo."
+                "diretti. I torrent gia' in cache sono immediati; gli altri vengono " +
+                "inviati al servizio e restano magnet finche' il download non e' pronto. " +
+                "La chiave resta salvata sul dispositivo."
             textSize = 13f
             setTextColor(Color.GRAY)
             setPadding(0, 0, 0, dp(8))
@@ -56,8 +60,8 @@ object DebridSettingsDialog {
         val group = RadioGroup(context)
         DebridSettings.services.forEach { service ->
             val button = RadioButton(context).apply {
-                id = android.view.View.generateViewId()
-                text = "${service.label}  (${service.keyPage})"
+                id = View.generateViewId()
+                text = service.label
                 isChecked = service.id == DebridSettings.service
                 setPadding(0, dp(4), 0, dp(4))
             }
@@ -80,6 +84,63 @@ object DebridSettingsDialog {
                 ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply { topMargin = dp(6) }
         )
+
+        // Switching service saves the typed key on the previous one and loads
+        // the key already stored for the new one.
+        var current = DebridSettings.service
+        group.setOnCheckedChangeListener { _, checkedId ->
+            val next = group.findViewById<RadioButton>(checkedId)?.tag as? String
+                ?: return@setOnCheckedChangeListener
+            if (next == current) return@setOnCheckedChangeListener
+            DebridSettings.service = current
+            DebridSettings.setApiKey(keyField.text.toString())
+            current = next
+            DebridSettings.service = next
+            keyField.setText(DebridSettings.apiKey)
+        }
+
+        content.addView(Button(context).apply {
+            text = "Apri pagina delle chiavi"
+            setOnClickListener {
+                val service = DebridSettings.services.firstOrNull { it.id == current }
+                    ?: DebridSettings.services.first()
+                try {
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(service.keyPage))
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                } catch (e: Exception) {
+                    Toast.makeText(context, service.keyPage, Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+
+        fun waitLabel(): String {
+            val seconds = DebridSettings.waitSeconds
+            return if (seconds == 0) {
+                "Attesa: nessuna (solo torrent in cache)"
+            } else {
+                "Attesa massima: $seconds s"
+            }
+        }
+
+        val wait = Button(context).apply {
+            text = waitLabel()
+            setOnClickListener {
+                DebridSettings.waitSeconds = DebridSettings.nextWaitSeconds()
+                text = waitLabel()
+            }
+        }
+        content.addView(wait)
+
+        content.addView(TextView(context).apply {
+            text = "Con l'attesa il magnet viene inviato al servizio: se il download non " +
+                "e' pronto entro il tempo scelto resta il magnet e al tentativo successivo " +
+                "il link e' diretto."
+            textSize = 12f
+            setTextColor(Color.GRAY)
+            setPadding(0, 0, 0, dp(6))
+        })
 
         val verify = Button(context).apply {
             text = "Verifica chiave"
@@ -118,6 +179,7 @@ object DebridSettingsDialog {
                 Toast.makeText(context, "Impostazioni debrid salvate", Toast.LENGTH_SHORT).show()
             }
             .setNeutralButton("Elimina chiave") { _, _ ->
+                DebridSettings.service = selectedService(group)
                 DebridSettings.setApiKey("")
                 Debrid.clearCache()
                 Toast.makeText(context, "Chiave eliminata", Toast.LENGTH_SHORT).show()

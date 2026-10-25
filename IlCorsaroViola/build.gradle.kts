@@ -15,14 +15,14 @@ android {
     sourceSets.getByName("main").java.srcDir(rootProject.file("shared/src/main/kotlin"))
 }
 
-version = 4
+version = 5
 
 dependencies {
     compileOnly("cloudstream:classes:pre-release@jar")
 }
 
 cloudstream {
-    description = "IlCorsaroViola: torrent P2P con seeders e formati 4K/1080p; con Real-Debrid, AllDebrid o TorBox i torrent in cache diventano link diretti."
+    description = "IlCorsaroViola: torrent P2P con seeders e formati 4K/1080p; con Real-Debrid, AllDebrid o TorBox i magnet diventano link diretti (con attesa configurabile del download)."
     authors = listOf("PriSynx")
     status = 1
     tvTypes = listOf("Movie", "TvSeries")

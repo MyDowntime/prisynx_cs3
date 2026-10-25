@@ -3,11 +3,13 @@ package prisynx.hub
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
@@ -499,8 +501,9 @@ object HubSettingsDialog {
     private fun debridTab(ui: Ui) {
         val c = ui.context
         heading(ui, "Debrid",
-            "Sblocca i magnet di IlCorsaroViola in link diretti. Vengono usati solo i " +
-                "torrent gia' in cache sul servizio: gli altri restano magnet.")
+            "Sblocca i magnet di IlCorsaroViola in link diretti. I torrent gia' in cache " +
+                "sono immediati; gli altri vengono inviati al servizio e restano magnet " +
+                "finche' il download non e' pronto.")
         ui.content.addView(toggleRow(c, "Usa il servizio debrid", null,
             get = { DebridSettings.enabled },
             set = {
@@ -535,6 +538,12 @@ object HubSettingsDialog {
         keyRow.tag = "debrid_key"
         ui.content.addView(keyRow, rowParams(c))
 
+        ui.content.addView(actionRow(c, "Apri pagina delle chiavi",
+            "Apre ${DebridSettings.services.first { it.id == DebridSettings.service }.keyPage} nel browser"
+        ) {
+            openKeyPage(ui)
+        }, rowParams(c))
+
         ui.content.addView(actionRow(c, "Verifica chiave",
             "Controlla la chiave sul servizio e mostra l'account"
         ) {
@@ -547,6 +556,24 @@ object HubSettingsDialog {
             toast(c, "Chiave eliminata")
             refresh(ui, "debrid_key")
         }, rowParams(c))
+
+        heading(ui, "Download", "Con i torrent non in cache il magnet viene inviato al servizio.")
+        val wait = DebridSettings.waitSeconds
+        val waitRow = actionRow(
+            c,
+            if (wait == 0) "Attesa: nessuna (solo torrent in cache)" else "Attesa massima: $wait s",
+            if (wait == 0) {
+                "Solo link diretti per i torrent gia' in cache; gli altri restano magnet"
+            } else {
+                "Il servizio scarica il torrent; se non e' pronto entro $wait s resta il magnet e al prossimo tentativo sara' diretto"
+            }
+        ) {
+            DebridSettings.waitSeconds = DebridSettings.nextWaitSeconds()
+            Debrid.clearCache()
+            refresh(ui, "debrid_wait")
+        }
+        waitRow.tag = "debrid_wait"
+        ui.content.addView(waitRow, rowParams(c))
     }
 
     private fun editDebridKey(ui: Ui) {
@@ -574,6 +601,20 @@ object HubSettingsDialog {
             }
             .setNegativeButton("Annulla", null)
             .show()
+    }
+
+    private fun openKeyPage(ui: Ui) {
+        val c = ui.context
+        val service = DebridSettings.services.firstOrNull { it.id == DebridSettings.service }
+            ?: DebridSettings.services.first()
+        try {
+            c.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(service.keyPage))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        } catch (e: Exception) {
+            toast(c, "Nessun browser disponibile: ${service.keyPage}")
+        }
     }
 
     private fun verifyDebridKey(ui: Ui) {

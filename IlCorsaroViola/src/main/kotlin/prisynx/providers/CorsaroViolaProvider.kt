@@ -110,7 +110,7 @@ class CorsaroViolaProvider : TmdbProvider("IlCorsaroViola", "https://corsaroviol
                 emit(
                     callback = callback,
                     url = t.magnet,
-                    label = label,
+                    label = label + if (DebridSettings.active()) " \u00B7 magnet ($tag in download)" else "",
                     quality = t.quality,
                     type = ExtractorLinkType.MAGNET,
                     referer = "",
