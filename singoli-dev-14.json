@@ -1,0 +1,8 @@
+{
+  "name": "PriSynx Provider singoli (dev fork)",
+  "description": "Manifest di test del fork MyDowntime per i provider singoli: punta ai pacchetti pubblicati sul branch builds del fork. Non fa parte della PR.",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/plugins-singoli-v14.json"
+  ]
+}
