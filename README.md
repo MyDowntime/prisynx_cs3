@@ -107,7 +107,7 @@ In CloudStream: **Impostazioni → Estensioni → Aggiungi repository** e incoll
 
 | Repository | URL | Cosa contiene |
 | :--- | :--- | :--- |
-| 🧩 **PriSynx Center** (consigliato) | `https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/center.json` | L'estensione **PriSynx** con tutti i provider **e RaiPlay integrata**, più il menu ⚙️ per TV; RaiPlay è installabile anche da sola |
+| 🧩 **PriSynx Center** (consigliato) | `https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/center.json` | L'estensione **PriSynx** con tutti i provider, **RaiPlay** e **KissKH integrati**, più il menu ⚙️ per TV; RaiPlay e KissKH sono installabili anche da soli |
 | 🔌 **Provider singoli** | `https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/singoli.json` | Un'estensione per provider, attivabili/aggiornabili una per una (niente menu) |
 
 Il vecchio URL `.../main/main.json` resta valido e mostra tutte le estensioni insieme.
