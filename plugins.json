@@ -1,10 +1,10 @@
 [
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Altadefinizione.png",
-    "fileHash": "sha256-5e4f49a253c268ca7d24ec2776cffeadb3c990f1e39dce9d1d93a86f8fd9bbde",
+    "fileHash": "sha256-273284e3af304b60464d0ed23f034040c202e59e7297a292457d0bc4a86cff39",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 141318,
+    "fileSize": 163222,
     "status": 1,
     "language": "it",
     "authors": [
@@ -22,10 +22,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/AnimeSaturn.png",
-    "fileHash": "sha256-7b5d61010c7f322f44c4830a59e6296ccec53ea884172d16f04aacc7d95723de",
+    "fileHash": "sha256-9f1ac20bedc13d4010362767d6878e032372b6268b62ee188d0fd9af384fa0fe",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 154265,
+    "fileSize": 176621,
     "status": 1,
     "language": "it",
     "authors": [
@@ -44,10 +44,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/AnimeUnity.png",
-    "fileHash": "sha256-b7d9073ea381b4f0e19cff021b17e50dc96d769a7e75c33ab823acdf0974ef4a",
+    "fileHash": "sha256-bcd4bed52a7c91b746b7194ab0fddbc12fc7481e2ec32c5b0bed2629df4de8e8",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 167934,
+    "fileSize": 190310,
     "status": 1,
     "language": "it",
     "authors": [
@@ -66,10 +66,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/AnimeWorld.png",
-    "fileHash": "sha256-88f3c4f21b36eeb0c68eb313795ef74f7262d8f9e2821838089b19f2810f19ac",
+    "fileHash": "sha256-1ae5f23f366cbb4e56fe54a41c3aa000c5ff01c4a850ec16a6323fc63c84781f",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 158114,
+    "fileSize": 180298,
     "status": 1,
     "language": "it",
     "authors": [
@@ -88,10 +88,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/CB01.png",
-    "fileHash": "sha256-a9f96270a927d3c1e571145871c6231587c980ff5e40ba1caa24aa6bba4f9d73",
+    "fileHash": "sha256-eced08b617206ccc304d2c5f44d03df2312f2c3bf0d464b1d1bc68fd6dd48523",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 148862,
+    "fileSize": 171285,
     "status": 1,
     "language": "it",
     "authors": [
@@ -109,10 +109,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/DualSync.png",
-    "fileHash": "sha256-2b95169550a6a28540242ce4cdd8d724a9cea7e4416ad7e009c90a2184bfe5e1",
+    "fileHash": "sha256-fa08b374b92129caf52451d0b116e2dc35bc8355001b90ecadcf56dfe387587f",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 156086,
+    "fileSize": 178331,
     "status": 1,
     "language": "it",
     "authors": [
@@ -130,10 +130,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Eurostreaming.png",
-    "fileHash": "sha256-2188e7aa03f66f2ebd2f4a06c64c9166ae665d177dcc96c00709881baa8909bb",
+    "fileHash": "sha256-33ba926e5c24ae03639429b47d7cde9e813aff728ea5616ef749e785e0ac1aad",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 143438,
+    "fileSize": 165428,
     "status": 1,
     "language": "it",
     "authors": [
@@ -151,10 +151,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Filmez.png",
-    "fileHash": "sha256-a7b37487302ed3f0371c02e2953842124892bb3253142befb90a95a1d494009d",
+    "fileHash": "sha256-0296fb80b1f156d04dea697e682b5e6ecec1ba8c13d4c422b98b0a62371f8f2f",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 137073,
+    "fileSize": 158771,
     "status": 1,
     "language": "it",
     "authors": [
@@ -171,10 +171,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Guardoserie.png",
-    "fileHash": "sha256-1990900d86413f123c55856cf752e12e4e1be52ac10efa36e7ccc29be3f9aff1",
+    "fileHash": "sha256-de9651a5d92682e442ec57b2683e18721c3e0fcacd4f7cbac4435f770d128313",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 161632,
+    "fileSize": 183855,
     "status": 1,
     "language": "it",
     "authors": [
@@ -192,10 +192,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/IlCorsaroViola.png",
-    "fileHash": "sha256-be0752b9e08a508d62302ac5957ce07c0476c3508263d912dbb7475d870ff8e3",
+    "fileHash": "sha256-8af45ac99b6eefe45d9f3123ed3d25a400278430339e1d1131e39f3a8c7d5981",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 141729,
+    "fileSize": 166104,
     "status": 1,
     "language": "it",
     "authors": [
@@ -205,18 +205,18 @@
       "Movie",
       "TvSeries"
     ],
-    "version": 3,
+    "version": 4,
     "internalName": "IlCorsaroViola",
-    "description": "IlCorsaroViola: torrent P2P con seeders e formati 4K/1080p.",
+    "description": "IlCorsaroViola: torrent P2P con seeders e formati 4K/1080p; con Real-Debrid, AllDebrid o TorBox i torrent in cache diventano link diretti.",
     "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/IlCorsaroViola.cs3",
     "name": "IlCorsaroViola"
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/KissKH.png",
-    "fileHash": "sha256-7042a3c3371897f57f5b91b4c75c3bd884102322b5d06f4e7110a62354c1471c",
+    "fileHash": "sha256-36f24d85ca57749d3c8fb6fae738441df049f911557f355e1bc2c8cde23b837e",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 189143,
+    "fileSize": 209604,
     "status": 1,
     "language": "it",
     "authors": [
@@ -237,10 +237,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/MovyITA.png",
-    "fileHash": "sha256-093274cfcac45ca65d04af1d3c4a762188b33703536ce69543f300107f8debd6",
+    "fileHash": "sha256-d0fb908a74022430ec4fe07032c53fcac1c6484db2a52148ae0c51514093a129",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 158193,
+    "fileSize": 180433,
     "status": 1,
     "language": "it",
     "authors": [
@@ -258,10 +258,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/OnlineSerieTV.png",
-    "fileHash": "sha256-8c589a8540fe860e4c0b50f15d3294a061015cc8afa47af6c22e226c30a54f22",
+    "fileHash": "sha256-af981d8fda53a6a96181506c4238841499efb4beab9870a3c840483c29ddedfb",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 137104,
+    "fileSize": 158804,
     "status": 1,
     "language": "it",
     "authors": [
@@ -279,10 +279,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/PaCC.png",
-    "fileHash": "sha256-46498a25ecec7e12b10f7f4ea327550ced6a28c2a047272b692bee6db1a50f4b",
+    "fileHash": "sha256-c8044323fc7bd3159967df92746c87c2758fc4bb749fe04f97a796e9d43e4632",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 142389,
+    "fileSize": 164325,
     "status": 1,
     "language": "it",
     "authors": [
@@ -300,10 +300,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/PriSynx.png",
-    "fileHash": "sha256-d3fef4720dd9d3c5fcb69ff2dbe4c52a8edaf70d69e952ec6deb712fd021a283",
+    "fileHash": "sha256-f8215d9efb164e4ddb92409128b007c60f75a9ec866f818e2133dcfb22816b92",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 484778,
+    "fileSize": 510221,
     "status": 1,
     "language": "it",
     "authors": [
@@ -316,9 +316,9 @@
       "AsianDrama",
       "Live"
     ],
-    "version": 10,
+    "version": 11,
     "internalName": "PriSynx",
-    "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay e KissKH.",
+    "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay, KissKH e servizi debrid per IlCorsaroViola.",
     "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx.cs3",
     "name": "PriSynx"
   },
@@ -346,10 +346,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/RealTime.png",
-    "fileHash": "sha256-4b81fdafa96aebf7be3acd2c515b5dfe99d4fc6f4aa8e88d00e57162b74a26ab",
+    "fileHash": "sha256-3028bf548f710aa494d46decd9f36f011ea65a9e8646e953f29dbb296b518dda",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 156753,
+    "fileSize": 179192,
     "status": 1,
     "language": "it",
     "authors": [
@@ -368,10 +368,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Toonitalia.png",
-    "fileHash": "sha256-9b8452f26e2c28854dd21f27895f84ce0b397bf58d882c2e6930678541944c7b",
+    "fileHash": "sha256-f8fceb98c8834cf8d87cb44beeeeab300dc7d6095333f3386c5071b3d39a8070",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 155819,
+    "fileSize": 178149,
     "status": 1,
     "language": "it",
     "authors": [
@@ -391,10 +391,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/VidxGo.png",
-    "fileHash": "sha256-8b859ca1425cb6ec51e1c8d6d680a85407509b3e74800774caa84eab432327a9",
+    "fileHash": "sha256-24d9c04bfcc35dcd523150a3d5f9558d280258313b535e6457e4c03917984b58",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 146828,
+    "fileSize": 168783,
     "status": 1,
     "language": "it",
     "authors": [
@@ -412,10 +412,10 @@
   },
   {
     "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/VixSrc.png",
-    "fileHash": "sha256-f8af0bc78601a944a204b991ea52429eb1d3fc6a6c7e5ea95839c4a1b953f18a",
+    "fileHash": "sha256-5d9d2e663971b89b28c4f74be98ec8f4fba2d591565df2c180a2ccfe0f75b30b",
     "apiVersion": 1,
     "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-    "fileSize": 143328,
+    "fileSize": 165360,
     "status": 1,
     "language": "it",
     "authors": [
