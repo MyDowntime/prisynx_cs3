@@ -1,8 +1,0 @@
-{
-  "name": "PriSynx Center (dev fork)",
-  "description": "Manifest di test del fork MyDowntime: PriSynx + RaiPlay dal branch builds. Non fa parte della PR.",
-  "manifestVersion": 1,
-  "pluginLists": [
-    "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/plugins-center-v14.json"
-  ]
-}
