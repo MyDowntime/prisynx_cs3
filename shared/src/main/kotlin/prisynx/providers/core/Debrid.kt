@@ -210,44 +210,59 @@ object Debrid {
     private suspend fun realDebrid(magnet: String, hash: String, key: String): DebridLink? {
         val headers = mapOf("Authorization" to "Bearer $key")
 
-        // Only cached torrents: no download on the debrid account, no waiting.
-        val availability = json.readTree(
-            net.get("$RD_API/torrents/instantAvailability/$hash", headers = headers, timeout = 20).text
-        )
-        val filesNode = availability.path(hash).path("rd")
-        val cached = (filesNode.isObject && filesNode.size() > 0) ||
-            (filesNode.isArray && filesNode.size() > 0)
-        if (!cached) return null
-        val cachedFile = if (filesNode.isObject) {
-            biggestFile(filesNode)
-        } else {
-            biggestFile(filesNode.path(0))
+        // Fast path: cached only, so nothing is downloaded on the account.
+        var cachedFile: Triple<String, String, Long>? = null
+        var availabilityOk = false
+        try {
+            val availability = json.readTree(
+                net.get("$RD_API/torrents/instantAvailability/$hash", headers = headers, timeout = 20).text
+            )
+            availabilityOk = true
+            val filesNode = availability.path(hash).path("rd")
+            val cached = (filesNode.isObject && filesNode.size() > 0) ||
+                (filesNode.isArray && filesNode.size() > 0)
+            if (!cached) return null
+            cachedFile = if (filesNode.isObject) {
+                biggestFile(filesNode)
+            } else {
+                biggestFile(filesNode.path(0))
+            }
+        } catch (e: Exception) {
+            // The endpoint is deprecated on some accounts: fall back to adding the
+            // magnet and keeping it only when it is immediately ready.
+            availabilityOk = false
         }
+        if (availabilityOk && cachedFile == null) return null
 
-        val added = json.readTree(
-            net.post(
-                "$RD_API/torrents/addMagnet",
-                headers = headers,
-                data = null,
-                requestBody = FormBody.Builder().add("magnet", magnet).build(),
-                timeout = 25
-            ).text
-        )
+        val added = try {
+            json.readTree(
+                net.post(
+                    "$RD_API/torrents/addMagnet",
+                    headers = headers,
+                    data = null,
+                    requestBody = FormBody.Builder().add("magnet", magnet).build(),
+                    timeout = 25
+                ).text
+            )
+        } catch (e: Exception) {
+            return null
+        }
         val id = added.path("id").asText("")
         if (id.isBlank()) return null
 
+        var keep = false
         try {
-            val files = cachedFile?.first ?: "all"
             net.post(
                 "$RD_API/torrents/selectFiles/$id",
                 headers = headers,
                 data = null,
-                requestBody = FormBody.Builder().add("files", files).build(),
+                requestBody = FormBody.Builder().add("files", cachedFile?.first ?: "all").build(),
                 timeout = 25
             )
 
             var link = ""
-            for (attempt in 0 until 5) {
+            val attempts = if (cachedFile != null) 5 else 3
+            for (attempt in 0 until attempts) {
                 val info = json.readTree(
                     net.get("$RD_API/torrents/info/$id", headers = headers, timeout = 20).text
                 )
@@ -256,7 +271,9 @@ object Debrid {
                     link = links.path(0).asText("")
                     if (link.isNotBlank()) break
                 }
-                if (attempt < 4) kotlinx.coroutines.delay(600)
+                val status = info.path("status").asText("")
+                if (status == "magnet_error" || status == "error" || status == "dead" || status == "virus") break
+                kotlinx.coroutines.delay(700)
             }
             if (link.isBlank()) return null
 
@@ -271,6 +288,8 @@ object Debrid {
             )
             val url = unlocked.path("download").asText("")
             if (url.isBlank()) return null
+            // The torrent stays on the account: deleting it may kill the link.
+            keep = true
             return DebridLink(
                 url = url,
                 name = unlocked.path("filename").asText(cachedFile?.second ?: ""),
@@ -278,6 +297,10 @@ object Debrid {
             )
         } catch (e: Exception) {
             return null
+        } finally {
+            if (!keep) {
+                runCatching { net.delete("$RD_API/torrents/delete/$id", headers = headers, timeout = 15) }
+            }
         }
     }
 
