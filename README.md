@@ -119,17 +119,20 @@ Provider singoli disponibili: `Altadefinizione`, `AnimeSaturn`, `AnimeUnity`, `A
 
 ### 🧩 PriSynx (hub con menu)
 
-L'estensione **PriSynx** raccoglie in un'unica sorgente tutti i provider **e RaiPlay**: al click su un titolo TMDB interroga in parallelo le sorgenti attive e invia i link nell'ordine scelto; le righe e i risultati RaiPlay (film, serie, documentari, dirette) si aprono e si riproducono direttamente dal catalogo Rai.
+L'estensione **PriSynx** raccoglie in un'unica sorgente tutti i provider, **RaiPlay** e **KissKH**: al click su un titolo TMDB interroga in parallelo le sorgenti attive e invia i link nell'ordine scelto; le righe e i risultati RaiPlay (film, serie, documentari, dirette) si aprono e si riproducono direttamente dal catalogo Rai, mentre KissKH usa il proprio catalogo nativo (drama e film asiatici).
 Dal pulsante ⚙️ dell'estensione (*Impostazioni → Estensioni → PriSynx*) si apre il menu a schermo intero, pensato per il telecomando (frecce + OK, *Indietro* per chiudere; ogni modifica è salvata subito, ricarica la home per vederla):
 
 | Scheda | Cosa si può fare |
 | :--- | :--- |
 | **Provider** | OK su una riga = ON/OFF; ▲/▼ a destra per l'ordine dei link; *Attiva tutti* / *Disattiva tutti* |
-| **Home** | Ordine delle sezioni (TopX, TMDB, Anime Kitsu, RaiPlay) e righe TMDB: Tendenze, Film/Serie popolari, Film/Serie più votati (attive di default), Al cinema, In arrivo, Serie in onda |
+| **Home** | Ordine delle sezioni (TopX, TMDB, Anime Kitsu, RaiPlay, KissKH) e righe TMDB: Tendenze, Film/Serie popolari, Film/Serie più votati (attive di default), Al cinema, In arrivo, Serie in onda |
 | **TopX** | Mostrare/nascondere TopX, **stile Portrait o Landscape** (copertine fresh verticali o orizzontali, con un manifest per stile), cambiare/ripristinare l'URL del manifest dello stile attivo, mostrare/nascondere i singoli cataloghi e **ordinarli** con ▲ ▼ |
 | **Anime** | Anime dal catalogo **Kitsu** (righe in home: tendenza, in corso, più popolari, più votati; risultati nella ricerca) e opzione per nascondere gli anime giapponesi da TMDB |
 | **RaiPlay** | Righe RaiPlay in home e risultati RaiPlay nella ricerca (ON/OFF), scelta delle singole righe RaiPlay |
+| **KissKH** | Righe KissKH in home e risultati KissKH nella ricerca (ON/OFF), scelta dei cataloghi (drama/film coreani, giapponesi, thailandesi, anime) e impostazioni KissKH (URL, chiave DeepL, lingua di traduzione, filtro adulti) |
 | **Altro** | Numero massimo di torrent IlCorsaroViola (default 3: prima il 4K e il Full HD con più seed), **Movy/DualSync: solo link sincronizzati** (default ON), ripristino impostazioni |
+
+**KissKH nel hub**: le righe native compaiono in home (se attive) e i risultati nella ricerca; aprendo una scheda, episodi e stream vengono risolti da KissKH. La voce *Provider* include KissKH come sorgente per i titoli TMDB: si può disattivare o spostare nell'ordine come le altre.
 
 Locandine: le card TMDB e Kitsu mostrano il voto (TMDB / IMDb) se la versione di CloudStream lo supporta. Aprendo un titolo da una riga **TopX**, lo sfondo della pagina è la copertina TopX landscape; dalle righe TMDB resta lo sfondo TMDB.
 

@@ -1,6 +1,6 @@
 {
   "name": "PriSynx Center",
-  "description": "PriSynx Center: un'unica estensione con tutti i provider e RaiPlay integrata, con menu ⚙️ per TV (provider on/off e ordine, cataloghi TMDB, TopX, righe RaiPlay, max torrent). RaiPlay è disponibile anche come estensione separata (facoltativa).",
+  "description": "PriSynx Center: un'unica estensione con tutti i provider, RaiPlay e KissKH integrati, con menu ⚙️ per TV (provider on/off e ordine, cataloghi TMDB, TopX, anime, righe RaiPlay e KissKH, max torrent). RaiPlay e KissKH sono disponibili anche come estensioni separate (facoltative).",
   "manifestVersion": 1,
   "pluginLists": [
     "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/builds/plugins-center.json"

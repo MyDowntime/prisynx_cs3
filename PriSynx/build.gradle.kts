@@ -1,6 +1,7 @@
-// PriSynx hub: one extension bundling every TMDB based PriSynx source.
-// The provider sources of the other modules are copied in (without their
-// *Plugin.kt entry points) so there is a single @CloudstreamPlugin class.
+// PriSynx hub: one extension bundling every PriSynx source (TMDB based
+// providers plus the native KissKH catalogue). The provider sources of the
+// other modules are copied in (without their *Plugin.kt entry points) so
+// there is a single @CloudstreamPlugin class.
 val hubSourceDir = layout.buildDirectory.dir("generated/hubsrc").get().asFile
 
 val syncHubSources = tasks.register<Sync>("syncHubSources") {
@@ -19,13 +20,13 @@ android {
 
 tasks.named("preBuild").configure { dependsOn(syncHubSources) }
 
-version = 9
+version = 10
 
 cloudstream {
-    description = "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay inclusa), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX e RaiPlay."
+    description = "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay e KissKH."
     authors = listOf("PriSynx")
     status = 1
-    tvTypes = listOf("Movie", "TvSeries", "Anime", "Live")
+    tvTypes = listOf("Movie", "TvSeries", "Anime", "AsianDrama", "Live")
     language = "it"
     iconUrl = "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PriSynx.png"
 }

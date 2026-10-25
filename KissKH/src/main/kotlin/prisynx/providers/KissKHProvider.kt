@@ -42,8 +42,21 @@ import prisynx.providers.core.qualityLabel
  * from an external catalogue. Streams are resolved with a per-episode token.
  */
 class KissKHProvider : TmdbProvider("KissKH", KissKHSettings.DEFAULT_BASE) {
-    private companion object {
-        const val TAG = "KissKH"
+    /** One row of the KissKH home page. The hub reuses this list for its settings. */
+    data class Catalog(val id: String, val label: String, val type: Int, val country: Int)
+
+    companion object {
+        private const val TAG = "KissKH"
+
+        val catalogs: List<Catalog> = listOf(
+            Catalog("kr_drama", "Drama coreani", 1, 2),
+            Catalog("kr_movie", "Film coreani", 2, 2),
+            Catalog("jp_drama", "Drama giapponesi", 1, 3),
+            Catalog("jp_movie", "Film giapponesi", 2, 3),
+            Catalog("th_drama", "Drama thailandesi", 1, 5),
+            Catalog("th_movie", "Film thailandesi", 2, 5),
+            Catalog("anime", "Anime", 3, 0)
+        )
     }
 
     private data class KissEpisode(
@@ -66,23 +79,15 @@ class KissKHProvider : TmdbProvider("KissKH", KissKHSettings.DEFAULT_BASE) {
     // ---------------------------------------------------------------- catalogue
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val specs = listOf(
-            Triple("Drama coreani", 1, 2),
-            Triple("Film coreani", 2, 2),
-            Triple("Drama giapponesi", 1, 3),
-            Triple("Film giapponesi", 2, 3),
-            Triple("Drama thailandesi", 1, 5),
-            Triple("Film thailandesi", 2, 5),
-            Triple("Anime", 3, 0)
-        )
         val results = coroutineScope {
-            specs.map { (name, type, country) ->
+            catalogs.map { catalog ->
                 async {
-                    val items = KissKHApi.list(type, country, page, 24)
+                    val items = KissKHApi.list(catalog.type, catalog.country, page, 24)
                     val cards = items.mapNotNull { item ->
-                        if (KissKHFilters.isAdult(item, type, country)) null else searchResponse(item)
+                        if (KissKHFilters.isAdult(item, catalog.type, catalog.country)) null
+                        else searchResponse(item)
                     }
-                    val row = cards.takeIf { it.isNotEmpty() }?.let { HomePageList(name, it) }
+                    val row = cards.takeIf { it.isNotEmpty() }?.let { HomePageList(catalog.label, it) }
                     row to (items.size >= 24)
                 }
             }.awaitAll()
@@ -93,12 +98,18 @@ class KissKHProvider : TmdbProvider("KissKH", KissKHSettings.DEFAULT_BASE) {
 
     override suspend fun search(query: String): List<SearchResponse> {
         if (query.isBlank()) return emptyList()
-        val native = KissKHApi.search(query)
+        val native = searchNative(query)
+        return native.ifEmpty { super.search(query) }
+    }
+
+    /** KissKH-native results only: the hub already searches TMDB by itself. */
+    internal suspend fun searchNative(query: String): List<SearchResponse> {
+        if (query.isBlank()) return emptyList()
+        return KissKHApi.search(query)
             .mapNotNull { item ->
                 val type = item.path("type").asInt(0)
                 if (KissKHFilters.isAdult(item, type, 0)) null else searchResponse(item)
             }
-        return native.ifEmpty { super.search(query) }
     }
 
     private fun searchResponse(item: JsonNode): SearchResponse? {

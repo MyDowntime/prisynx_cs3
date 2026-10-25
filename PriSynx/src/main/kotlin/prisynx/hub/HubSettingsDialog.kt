@@ -44,7 +44,7 @@ object HubSettingsDialog {
     private const val ON = 0xFF8B5CF6.toInt()
     private const val OFF = 0xFF3A3347.toInt()
 
-    private val tabs = listOf("Provider", "Home", "TopX", "Anime", "RaiPlay", "Altro")
+    private val tabs = listOf("Provider", "Home", "TopX", "Anime", "KissKH", "RaiPlay", "Altro")
 
     private class Ui(val context: Context, val content: LinearLayout, val scroll: ScrollView) {
         val tabViews = mutableListOf<TextView>()
@@ -163,7 +163,8 @@ object HubSettingsDialog {
             1 -> homeTab(ui)
             2 -> topxTab(ui)
             3 -> animeTab(ui)
-            4 -> raiTab(ui)
+            4 -> kisskhTab(ui)
+            5 -> raiTab(ui)
             else -> otherTab(ui)
         }
         ui.scroll.scrollTo(0, 0)
@@ -426,6 +427,48 @@ object HubSettingsDialog {
         }
     }
 
+    // ------------------------------------------------------------ KissKH
+
+    private fun kisskhTab(ui: Ui) {
+        val c = ui.context
+        heading(ui, "KissKH",
+            "Drama e film asiatici con sottotitoli ITA/ENG e traduzione DeepL opzionale.")
+        ui.content.addView(toggleRow(c, "Righe KissKH in home", null,
+            get = { HubSettings.kisskhHome },
+            set = {
+                HubSettings.kisskhHome = it
+                KissKHHub.clearCache()
+            }
+        ), rowParams(c))
+        ui.content.addView(toggleRow(c, "Risultati KissKH nella ricerca", null,
+            get = { HubSettings.kisskhSearch },
+            set = { HubSettings.kisskhSearch = it }
+        ), rowParams(c))
+
+        val deepl = if (prisynx.providers.KissKHSettings.translationActive()) {
+            "DeepL attivo (${prisynx.providers.KissKHSettings.targetLang})"
+        } else {
+            "Solo sottotitoli nativi"
+        }
+        ui.content.addView(actionRow(c, "Impostazioni KissKH",
+            "URL, chiave DeepL, lingua e filtro adulti · $deepl"
+        ) {
+            prisynx.providers.KissKHSettingsDialog.show(c)
+        }, rowParams(c))
+
+        heading(ui, "Cataloghi KissKH", "Scegli quali righe mostrare nella home.")
+        prisynx.providers.KissKHProvider.catalogs.forEach { catalog ->
+            ui.content.addView(toggleRow(c, catalog.label, null,
+                get = { HubSettings.isKisskhRowEnabled(catalog.id) },
+                set = { HubSettings.setKisskhRowEnabled(catalog.id, it) }
+            ), rowParams(c))
+        }
+        ui.content.addView(actionRow(c, "Ricarica cataloghi KissKH", null) {
+            KissKHHub.clearCache()
+            refresh(ui)
+        }, rowParams(c))
+    }
+
     // ------------------------------------------------------------ RaiPlay
 
     private fun raiTab(ui: Ui) {
@@ -466,13 +509,14 @@ object HubSettingsDialog {
 
         heading(ui, "Ripristino", null)
         ui.content.addView(actionRow(c, "Ripristina impostazioni predefinite",
-            "Provider, ordine, cataloghi, TopX, anime e RaiPlay") {
+            "Provider, ordine, cataloghi, TopX, anime, RaiPlay e KissKH") {
             AlertDialog.Builder(c)
                 .setTitle("Ripristinare tutto?")
                 .setMessage("Tutte le impostazioni di PriSynx torneranno ai valori predefiniti.")
                 .setPositiveButton("Ripristina") { _, _ ->
                     HubSettings.resetAll()
                     TopX.clearCache()
+                    KissKHHub.clearCache()
                     toast(c, "Impostazioni ripristinate")
                     refresh(ui)
                 }

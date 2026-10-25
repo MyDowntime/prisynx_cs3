@@ -13,6 +13,7 @@ import prisynx.providers.DualSyncProvider
 import prisynx.providers.EurostreamingProvider
 import prisynx.providers.FilmezProvider
 import prisynx.providers.GuardoserieProvider
+import prisynx.providers.KissKHProvider
 import prisynx.providers.MovyitaProvider
 import prisynx.providers.OnlineSerieTvProvider
 import prisynx.providers.PaCCProvider
@@ -53,7 +54,8 @@ object HubSettings {
         HubSource("toonitalia", "Toonitalia") { ToonitaliaProvider() },
         HubSource("animeunity", "AnimeUnity") { AnimeUnityProvider() },
         HubSource("animesaturn", "AnimeSaturn") { AnimeSaturnProvider() },
-        HubSource("animeworld", "AnimeWorld") { AnimeWorldProvider() }
+        HubSource("animeworld", "AnimeWorld") { AnimeWorldProvider() },
+        HubSource("kisskh", "KissKH") { KissKHProvider() }
     )
 
     val tmdbRows: List<HubTmdbRow> = listOf(
@@ -183,6 +185,19 @@ object HubSettings {
     fun isRaiRowEnabled(key: String) = bool("rai_row_$key", true)
     fun setRaiRowEnabled(key: String, on: Boolean) = setBool("rai_row_$key", on)
 
+    // ------------------------------------------------------------ KissKH
+
+    var kisskhHome: Boolean
+        get() = bool("kisskh_home", true)
+        set(value) = setBool("kisskh_home", value)
+
+    var kisskhSearch: Boolean
+        get() = bool("kisskh_search", true)
+        set(value) = setBool("kisskh_search", value)
+
+    fun isKisskhRowEnabled(id: String) = bool("kisskh_row_$id", true)
+    fun setKisskhRowEnabled(id: String, on: Boolean) = setBool("kisskh_row_$id", on)
+
     // ------------------------------------------------------------ Anime (Kitsu)
 
     var kitsuHome: Boolean
@@ -207,14 +222,19 @@ object HubSettings {
         "topx" to "Cataloghi TopX",
         "tmdb" to "Cataloghi TMDB",
         "kitsu" to "Anime (Kitsu)",
-        "rai" to "RaiPlay"
+        "rai" to "RaiPlay",
+        "kisskh" to "KissKH"
     )
 
     fun homeOrder(): List<String> {
         val ids = homeGroups.map { it.first }
         val saved = prefs?.getString("home_order", null)
             ?.split(',')?.filter { it in ids }?.distinct() ?: emptyList()
-        val fallback = if (topxFirst) listOf("topx", "tmdb", "kitsu", "rai") else listOf("tmdb", "topx", "kitsu", "rai")
+        val fallback = if (topxFirst) {
+            listOf("topx", "tmdb", "kitsu", "rai", "kisskh")
+        } else {
+            listOf("tmdb", "topx", "kitsu", "rai", "kisskh")
+        }
         return saved + fallback.filter { it !in saved }
     }
 
