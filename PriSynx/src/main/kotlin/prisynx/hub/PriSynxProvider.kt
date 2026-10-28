@@ -39,14 +39,27 @@ class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
             val topxJob = async { if (page <= 1 && HubSettings.topxEnabled) topxRows() else emptyList() }
             val raiJob = async { if (page <= 1 && HubSettings.raiHome) raiRows() else emptyList() }
             val kitsuJob = async { if (HubSettings.kitsuHome) kitsuRows(page) else emptyList() }
+            val kisskhJob = async {
+                if (HubSettings.kisskhHome) KissKHHub.rows(page) else KissKHHub.Home.EMPTY
+            }
             val tmdb = tmdbJob.awaitAll()
             val tmdbLists = tmdb.filter { it.list.isNotEmpty() }.map { HomePageList(it.name, it.list) }
             val topx = topxJob.await()
             val rai = raiJob.await()
             val kitsu = kitsuJob.await()
-            val groups = mapOf("tmdb" to tmdbLists, "topx" to topx, "kitsu" to kitsu, "rai" to rai)
+            val kisskh = kisskhJob.await()
+            val groups = mapOf(
+                "tmdb" to tmdbLists,
+                "topx" to topx,
+                "kitsu" to kitsu,
+                "rai" to rai,
+                "kisskh" to KissKHHub.visibleRows(kisskh.rows)
+            )
             val lists = HubSettings.homeOrder().flatMap { groups[it].orEmpty() }
-            newHomePageResponse(lists, tmdb.any { it.hasNext } || kitsu.isNotEmpty())
+            newHomePageResponse(
+                lists,
+                tmdb.any { it.hasNext } || kitsu.isNotEmpty() || kisskh.hasNext
+            )
         }
     }
 
@@ -107,12 +120,22 @@ class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
                 }
             } ?: emptyList()
         }
+        val kisskh = async {
+            if (!HubSettings.kisskhSearch) emptyList()
+            else withTimeoutOrNull(KISSKH_TIMEOUT_MS) {
+                try {
+                    KissKHHub.api.searchNative(query)
+                } catch (e: Exception) {
+                    emptyList()
+                }
+            } ?: emptyList()
+        }
         val tmdb = try {
             tmdbSearch(query)
         } catch (e: Exception) {
             emptyList()
         }
-        tmdb + kitsu.await() + rai.await()
+        tmdb + kitsu.await() + rai.await() + kisskh.await()
     }
 
     override suspend fun load(url: String): LoadResponse {
@@ -124,6 +147,7 @@ class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
             }
         }
         if (ref != null || KitsuRef.parse(url) != null) return super.load(url)
+        if (KissKHHub.isKissUrl(url)) return KissKHHub.api.load(url)
         return RaiHub.api.load(url)
             ?: throw com.lagradost.cloudstream3.ErrorLoadingException("RaiPlay: contenuto non disponibile")
     }
@@ -136,6 +160,9 @@ class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
     ): Boolean {
         if (MediaRef.parse(data) != null || KitsuRef.parse(data) != null) {
             return super.loadLinks(data, isCasting, subtitleCallback, callback)
+        }
+        if (KissKHHub.isKissUrl(data)) {
+            return KissKHHub.api.loadLinks(data, isCasting, subtitleCallback, callback)
         }
         return RaiHub.api.loadLinks(data, isCasting, subtitleCallback, callback)
     }
@@ -253,5 +280,6 @@ class PriSynxProvider : TmdbProvider("PriSynx", "https://www.themoviedb.org") {
     private companion object {
         const val SOURCE_TIMEOUT_MS = 60_000L
         const val RAI_TIMEOUT_MS = 20_000L
+        const val KISSKH_TIMEOUT_MS = 20_000L
     }
 }

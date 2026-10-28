@@ -15,7 +15,7 @@ android {
     sourceSets.getByName("main").java.srcDir(rootProject.file("shared/src/main/kotlin"))
 }
 
-version = 2
+version = 3
 
 dependencies {
     compileOnly("cloudstream:classes:pre-release@jar")

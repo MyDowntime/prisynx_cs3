@@ -3,11 +3,13 @@ package prisynx.hub
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
@@ -25,6 +27,8 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.coroutines.runBlocking
+import prisynx.providers.core.Debrid
+import prisynx.providers.core.DebridSettings
 
 /**
  * Full screen settings for the PriSynx hub, designed for the D-pad:
@@ -44,7 +48,7 @@ object HubSettingsDialog {
     private const val ON = 0xFF8B5CF6.toInt()
     private const val OFF = 0xFF3A3347.toInt()
 
-    private val tabs = listOf("Provider", "Home", "TopX", "Anime", "RaiPlay", "Altro")
+    private val tabs = listOf("Provider", "Home", "TopX", "Anime", "KissKH", "RaiPlay", "Debrid", "Altro")
 
     private class Ui(val context: Context, val content: LinearLayout, val scroll: ScrollView) {
         val tabViews = mutableListOf<TextView>()
@@ -163,7 +167,9 @@ object HubSettingsDialog {
             1 -> homeTab(ui)
             2 -> topxTab(ui)
             3 -> animeTab(ui)
-            4 -> raiTab(ui)
+            4 -> kisskhTab(ui)
+            5 -> raiTab(ui)
+            6 -> debridTab(ui)
             else -> otherTab(ui)
         }
         ui.scroll.scrollTo(0, 0)
@@ -426,6 +432,48 @@ object HubSettingsDialog {
         }
     }
 
+    // ------------------------------------------------------------ KissKH
+
+    private fun kisskhTab(ui: Ui) {
+        val c = ui.context
+        heading(ui, "KissKH",
+            "Drama e film asiatici con sottotitoli ITA/ENG e traduzione DeepL opzionale.")
+        ui.content.addView(toggleRow(c, "Righe KissKH in home", null,
+            get = { HubSettings.kisskhHome },
+            set = {
+                HubSettings.kisskhHome = it
+                KissKHHub.clearCache()
+            }
+        ), rowParams(c))
+        ui.content.addView(toggleRow(c, "Risultati KissKH nella ricerca", null,
+            get = { HubSettings.kisskhSearch },
+            set = { HubSettings.kisskhSearch = it }
+        ), rowParams(c))
+
+        val deepl = if (prisynx.providers.KissKHSettings.translationActive()) {
+            "DeepL attivo (${prisynx.providers.KissKHSettings.targetLang})"
+        } else {
+            "Solo sottotitoli nativi"
+        }
+        ui.content.addView(actionRow(c, "Impostazioni KissKH",
+            "URL, chiave DeepL, lingua e filtro adulti · $deepl"
+        ) {
+            prisynx.providers.KissKHSettingsDialog.show(c)
+        }, rowParams(c))
+
+        heading(ui, "Cataloghi KissKH", "Scegli quali righe mostrare nella home.")
+        prisynx.providers.KissKHProvider.catalogs.forEach { catalog ->
+            ui.content.addView(toggleRow(c, catalog.label, null,
+                get = { HubSettings.isKisskhRowEnabled(catalog.id) },
+                set = { HubSettings.setKisskhRowEnabled(catalog.id, it) }
+            ), rowParams(c))
+        }
+        ui.content.addView(actionRow(c, "Ricarica cataloghi KissKH", null) {
+            KissKHHub.clearCache()
+            refresh(ui)
+        }, rowParams(c))
+    }
+
     // ------------------------------------------------------------ RaiPlay
 
     private fun raiTab(ui: Ui) {
@@ -448,6 +496,142 @@ object HubSettingsDialog {
         )
     }
 
+    // ------------------------------------------------------------ Debrid
+
+    private fun debridTab(ui: Ui) {
+        val c = ui.context
+        heading(ui, "Debrid",
+            "Sblocca i magnet di IlCorsaroViola in link diretti. I torrent gia' in cache " +
+                "sono immediati; gli altri vengono inviati al servizio e restano magnet " +
+                "finche' il download non e' pronto.")
+        ui.content.addView(toggleRow(c, "Usa il servizio debrid", null,
+            get = { DebridSettings.enabled },
+            set = {
+                DebridSettings.enabled = it
+                Debrid.clearCache()
+            }
+        ), rowParams(c))
+
+        heading(ui, "Servizio", "La chiave si prende dalla pagina indicata.")
+        DebridSettings.services.forEach { service ->
+            val on = service.id == DebridSettings.service
+            val hasKey = DebridSettings.keyOf(service.id).isNotBlank()
+            val row = actionRow(
+                c,
+                (if (on) "\u25CF " else "\u25CB ") + service.label,
+                service.keyPage + (if (hasKey) " \u00B7 chiave salvata" else "")
+            ) {
+                DebridSettings.service = service.id
+                Debrid.clearCache()
+                refresh(ui, "debrid_srv_${service.id}")
+            }
+            row.tag = "debrid_srv_${service.id}"
+            ui.content.addView(row, rowParams(c))
+        }
+
+        heading(ui, "Chiave API", null)
+        val keyRow = actionRow(
+            c,
+            "Chiave ${DebridSettings.labelOf(DebridSettings.service)}",
+            DebridSettings.maskedKey()
+        ) { editDebridKey(ui) }
+        keyRow.tag = "debrid_key"
+        ui.content.addView(keyRow, rowParams(c))
+
+        ui.content.addView(actionRow(c, "Apri pagina delle chiavi",
+            "Apre ${DebridSettings.services.first { it.id == DebridSettings.service }.keyPage} nel browser"
+        ) {
+            openKeyPage(ui)
+        }, rowParams(c))
+
+        ui.content.addView(actionRow(c, "Verifica chiave",
+            "Controlla la chiave sul servizio e mostra l'account"
+        ) {
+            verifyDebridKey(ui)
+        }, rowParams(c))
+
+        ui.content.addView(actionRow(c, "Elimina chiave salvata", null) {
+            DebridSettings.setApiKey("")
+            Debrid.clearCache()
+            toast(c, "Chiave eliminata")
+            refresh(ui, "debrid_key")
+        }, rowParams(c))
+
+        heading(ui, "Download", "Con i torrent non in cache il magnet viene inviato al servizio.")
+        val wait = DebridSettings.waitSeconds
+        val waitRow = actionRow(
+            c,
+            if (wait == 0) "Attesa: nessuna (solo torrent in cache)" else "Attesa massima: $wait s",
+            if (wait == 0) {
+                "Solo link diretti per i torrent gia' in cache; gli altri restano magnet"
+            } else {
+                "Il servizio scarica il torrent; se non e' pronto entro $wait s resta il magnet e al prossimo tentativo sara' diretto"
+            }
+        ) {
+            DebridSettings.waitSeconds = DebridSettings.nextWaitSeconds()
+            Debrid.clearCache()
+            refresh(ui, "debrid_wait")
+        }
+        waitRow.tag = "debrid_wait"
+        ui.content.addView(waitRow, rowParams(c))
+    }
+
+    private fun editDebridKey(ui: Ui) {
+        val c = ui.context
+        val service = DebridSettings.labelOf(DebridSettings.service)
+        val input = EditText(c).apply {
+            setText(DebridSettings.apiKey)
+            hint = "Chiave API $service"
+            setSingleLine(true)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            setSelectAllOnFocus(true)
+        }
+        val box = FrameLayout(c).apply {
+            setPadding(dp(c, 20), dp(c, 8), dp(c, 20), 0)
+            addView(input)
+        }
+        AlertDialog.Builder(c)
+            .setTitle("Chiave API $service")
+            .setView(box)
+            .setPositiveButton("Salva") { _, _ ->
+                DebridSettings.setApiKey(input.text.toString())
+                Debrid.clearCache()
+                toast(c, "Chiave salvata")
+                refresh(ui, "debrid_key")
+            }
+            .setNegativeButton("Annulla", null)
+            .show()
+    }
+
+    private fun openKeyPage(ui: Ui) {
+        val c = ui.context
+        val service = DebridSettings.services.firstOrNull { it.id == DebridSettings.service }
+            ?: DebridSettings.services.first()
+        try {
+            c.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(service.keyPage))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        } catch (e: Exception) {
+            toast(c, "Nessun browser disponibile: ${service.keyPage}")
+        }
+    }
+
+    private fun verifyDebridKey(ui: Ui) {
+        val c = ui.context
+        val service = DebridSettings.service
+        val key = DebridSettings.apiKey
+        if (key.isBlank()) {
+            toast(c, "Inserisci prima la chiave")
+            return
+        }
+        toast(c, "Verifica in corso...")
+        Thread {
+            val message = runBlocking { Debrid.check(service, key) }
+            ui.main.post { toast(c, message) }
+        }.apply { isDaemon = true }.start()
+    }
+
     // ------------------------------------------------------------ Altro
 
     private fun otherTab(ui: Ui) {
@@ -466,13 +650,14 @@ object HubSettingsDialog {
 
         heading(ui, "Ripristino", null)
         ui.content.addView(actionRow(c, "Ripristina impostazioni predefinite",
-            "Provider, ordine, cataloghi, TopX, anime e RaiPlay") {
+            "Provider, ordine, cataloghi, TopX, anime, RaiPlay, KissKH e debrid") {
             AlertDialog.Builder(c)
                 .setTitle("Ripristinare tutto?")
                 .setMessage("Tutte le impostazioni di PriSynx torneranno ai valori predefiniti.")
                 .setPositiveButton("Ripristina") { _, _ ->
                     HubSettings.resetAll()
                     TopX.clearCache()
+                    KissKHHub.clearCache()
                     toast(c, "Impostazioni ripristinate")
                     refresh(ui)
                 }
