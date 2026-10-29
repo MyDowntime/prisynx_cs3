@@ -213,10 +213,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/KissKH.png",
-        "fileHash": "sha256-fbb1ab25973d446866c622b0ebccc4d7b09451425c91384960cf2fe9a8902e99",
+        "fileHash": "sha256-6bc32e18bfd63dc1f73099c5dd7f2b552fa204a004607c6d1af60b8b8b47bee0",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 217288,
+        "fileSize": 219461,
         "status": 1,
         "language": "it",
         "authors": [
@@ -232,7 +232,7 @@
         "version": 4,
         "internalName": "KissKH",
         "description": "Catalogo KissKH nativo, drama e film asiatici con sottotitoli ITA/ENG e traduzione DeepL opzionale.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH-v4.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH-v4b.cs3",
         "name": "KissKH"
     },
     {
@@ -300,10 +300,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PriSynx.png",
-        "fileHash": "sha256-0d85ed528fb7c02c55a9e07fd94c666a5965f84dfe539b1feaf02a227d96a927",
+        "fileHash": "sha256-e99799aaf99585489e4d0421a5f10a4b6c9666fd9ea15ae9db1423226b8157c6",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 519736,
+        "fileSize": 521757,
         "status": 1,
         "language": "it",
         "authors": [
@@ -319,7 +319,7 @@
         "version": 15,
         "internalName": "PriSynx",
         "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay, KissKH e servizi debrid (con attesa del download) per IlCorsaroViola.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v15.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v15b.cs3",
         "name": "PriSynx"
     },
     {
