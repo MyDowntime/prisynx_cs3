@@ -44,7 +44,12 @@ fastify.get('/health', async (request, reply) => {
 
 // 1. CARICAMENTO CONFIGURAZIONE CIFRATA (PUSH)
 fastify.post('/api/vault/push', async (request, reply) => {
-    const { pin, salt, payload, deviceName } = request.body || {};
+    let body = request.body;
+    if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch (e) {}
+    }
+    console.log('Received PUSH body keys:', body ? Object.keys(body) : null, 'pin:', body ? body.pin : null);
+    const { pin, salt, payload, deviceName } = body || {};
 
     if (!pin || !/^\d{6}$/.test(String(pin).trim())) {
         return reply.code(400).send({ error: 'PIN non valido. Richieste esattamente 6 cifre.' });
@@ -99,7 +104,12 @@ fastify.post('/api/vault/push', async (request, reply) => {
 
 // 2. RECUPERO CONFIGURAZIONE CIFRATA (PULL con rate-limiting)
 fastify.post('/api/vault/pull', async (request, reply) => {
-    const { pin } = request.body || {};
+    let body = request.body;
+    if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch (e) {}
+    }
+    console.log('Received PULL body keys:', body ? Object.keys(body) : null, 'pin:', body ? body.pin : null);
+    const { pin } = body || {};
 
     if (!pin || !/^\d{6}$/.test(String(pin).trim())) {
         return reply.code(400).send({ error: 'PIN non valido. Richieste esattamente 6 cifre.' });
