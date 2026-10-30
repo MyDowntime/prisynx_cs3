@@ -1,0 +1,12 @@
+services:
+  prisynx-sync:
+    build: .
+    container_name: prisynx-sync
+    restart: always
+    ports:
+      - "8795:8795"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PORT=8795
+      - DB_PATH=/app/data/sync.db

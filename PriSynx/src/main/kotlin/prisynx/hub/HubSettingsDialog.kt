@@ -648,6 +648,14 @@ object HubSettingsDialog {
             set = { HubSettings.syncedOnly = it }
         ), rowParams(c))
 
+        // Sincronizzazione Crittografata E2EE (PriSynx Vault)
+        prisynx.sync.SyncUi.renderSyncSection(
+            context = c,
+            container = ui.content,
+            heading = { title, desc -> heading(ui, title, desc) },
+            toast = { msg -> toast(c, msg) }
+        )
+
         heading(ui, "Ripristino", null)
         ui.content.addView(actionRow(c, "Ripristina impostazioni predefinite",
             "Provider, ordine, cataloghi, TopX, anime, RaiPlay, KissKH e debrid") {
