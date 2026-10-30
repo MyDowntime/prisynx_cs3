@@ -15,7 +15,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import com.lagradost.cloudstream3.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -184,7 +183,11 @@ object SyncUi {
                         val restored = FullBackupManager.restoreFullBackupJson(context, res)
                         withContext(Dispatchers.Main) {
                             if (restored) {
-                                runCatching { MainActivity.bookmarksUpdatedEvent(true) }
+                                runCatching {
+                                    val clazz = Class.forName("com.lagradost.cloudstream3.MainActivity")
+                                    val method = clazz.getMethod("bookmarksUpdatedEvent", Boolean::class.javaPrimitiveType)
+                                    method.invoke(null, true)
+                                }
                                 AlertDialog.Builder(context)
                                     .setTitle("Ripristino Completato! ✅")
                                     .setMessage("Tutte le preferenze e la cronologia sono state aggiornate con successo.\nRicarica CloudStream per vedere le modifiche.")

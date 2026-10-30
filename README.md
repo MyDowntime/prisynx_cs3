@@ -131,7 +131,7 @@ Dal pulsante ⚙️ dell'estensione (*Impostazioni → Estensioni → PriSynx*) 
 | **RaiPlay** | Righe RaiPlay in home e risultati RaiPlay nella ricerca (ON/OFF), scelta delle singole righe RaiPlay |
 | **KissKH** | Righe KissKH in home e risultati KissKH nella ricerca (ON/OFF), scelta dei cataloghi (drama/film coreani, giapponesi, thailandesi, anime) e impostazioni KissKH (URL, chiave DeepL, lingua di traduzione, filtro adulti) |
 | **Debrid** | Sblocco dei magnet di **IlCorsaroViola** in link diretti con **Real-Debrid**, **AllDebrid** o **TorBox**: scelta del servizio, chiave API (con verifica dell'account), ON/OFF e **attesa massima** del download (0/20/40/60/90/120 s) |
-| **Altro** | Numero massimo di torrent IlCorsaroViola (default 3: prima il 4K e il Full HD con più seed), **Movy/DualSync: solo link sincronizzati** (default ON), ripristino impostazioni |
+| **Altro** | **Sincronizzazione Cloud E2EE (PriSynx Vault)** con PIN a 6 cifre, numero massimo di torrent IlCorsaroViola, **Movy/DualSync: solo link sincronizzati**, ripristino impostazioni |
 
 **KissKH nel hub**: le righe native compaiono in home (se attive) e i risultati nella ricerca; aprendo una scheda, episodi e stream vengono risolti da KissKH. La voce *Provider* include KissKH come sorgente per i titoli TMDB: si può disattivare o spostare nell'ordine come le altre.
 
@@ -142,6 +142,24 @@ Locandine: le card TMDB e Kitsu mostrano il voto (TMDB / IMDb) se la versione di
 **Anime con Kitsu**: TMDB raggruppa gli anime in stagioni/episodi diversi da quelli dei siti anime (es. *Jujutsu Kaisen* S2E1 diventava l'episodio 25), quindi molti episodi non si trovavano. Kitsu ha una scheda per ogni stagione/cour con la stessa numerazione di AnimeUnity, AnimeSaturn e AnimeWorld: aprendo un anime dalle righe o dalla ricerca Kitsu, PriSynx interroga solo queste tre sorgenti (nell'ordine scelto) con l'ID Kitsu. Le pagine mostrano poster, sfondo, logo, trama in italiano (da TMDB, se c'è), trailer, titoli e miniature degli episodi, e i titoli collegati (sequel/prequel). Di default gli anime giapponesi non compaiono più nei cataloghi e nella ricerca TMDB (si può riattivare dalla scheda *Anime*). Anche il percorso TMDB è più tollerante: se l'episodio mappato non esiste, viene riprovato col numero originale.
 
 Le estensioni singole restano installabili a parte (ognuna con home e ricerca proprie).
+
+### 🔒 Sincronizzazione Cloud Crittografata (PriSynx Vault E2EE)
+
+Dal menu **PriSynx → Impostazioni → Altro** è disponibile il sistema di sincronizzazione e backup multipiattaforma (Zero-Knowledge E2EE):
+
+- **Cosa sincronizza**:
+  - Preferenze di CloudStream (temi, player, sottotitoli, repository installati).
+  - Impostazioni di **tutti i plugin** presenti (chiavi Real-Debrid, AllDebrid, TorBox, preferenze KissKH, categorie, ecc.).
+  - Cronologia e avanzamento riproduzione al secondo (`ResumeWatching`), stagione ed episodio visti, preferiti e segnalibri.
+- **Come funziona**:
+  1. **Dispositivo A (Sorgente)**: Apri *Impostazioni → Altro*, clicca su **"🎲 Genera nuovo PIN casuale"** (oppure scegline uno a 6 cifre) e premi **"📤 Cifra e Invia Backup alla VPS"**. Il client cifra tutti i dati in locale con **AES-256-GCM** e li invia al server vault.
+  2. **Dispositivo B (Destinazione)**: Apri *Impostazioni → Altro*, inserisci lo stesso PIN a 6 cifre e premi **"📥 Scarica e Ripristina da questo PIN"**. Tutti i dati vengono scaricati, decifrati in locale e applicati istantaneamente.
+- **Sicurezza e Privacy**:
+  - Nessun dato in chiaro: la VPS riceve solo byte cifrati opachi e non conosce la chiave di decifratura.
+  - Protezione anti-bruteforce: dopo 5 tentativi consecutivi di PIN errato, il server blocca l'accesso per 60 minuti.
+  - Il codice del server è open source e disponibile nella cartella [`server/`](server/).
+
+---
 
 ### 🎧 Movy, Cinejoy e VidFast con audio ITA (MovyITA / DualSync)
 

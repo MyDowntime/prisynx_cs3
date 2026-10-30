@@ -2,7 +2,7 @@ package prisynx.sync
 
 import android.os.Build
 import android.util.Base64
-import com.lagradost.cloudstream3.app
+import prisynx.providers.core.net
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.Dispatchers
@@ -69,11 +69,11 @@ object SyncClient {
             )
 
             val jsonBody = mapper.writeValueAsString(body)
-            val res = app.post(
+            val res = net.post(
                 "$base/api/vault/push",
                 headers = mapOf("Content-Type" to "application/json"),
                 json = jsonBody,
-                timeout = 15_000L
+                timeout = 15
             )
 
             if (res.code in 200..299) {
@@ -100,11 +100,11 @@ object SyncClient {
             val body = mapOf("pin" to pin)
             val jsonBody = mapper.writeValueAsString(body)
 
-            val res = app.post(
+            val res = net.post(
                 "$base/api/vault/pull",
                 headers = mapOf("Content-Type" to "application/json"),
                 json = jsonBody,
-                timeout = 15_000L
+                timeout = 15
             )
 
             if (res.code in 200..299) {
