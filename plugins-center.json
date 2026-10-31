@@ -1,10 +1,10 @@
 [
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PriSynx.png",
-        "fileHash": "sha256-e99799aaf99585489e4d0421a5f10a4b6c9666fd9ea15ae9db1423226b8157c6",
+        "fileHash": "sha256-b69f17c682947b68da4447dfef998b2076932f83033380664e901036ec182932",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 521757,
+        "fileSize": 539334,
         "status": 1,
         "language": "it",
         "authors": [
@@ -20,7 +20,7 @@
         "version": 15,
         "internalName": "PriSynx",
         "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay, KissKH e servizi debrid (con attesa del download) per IlCorsaroViola.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v15b.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v15c.cs3",
         "name": "PriSynx"
     },
     {
