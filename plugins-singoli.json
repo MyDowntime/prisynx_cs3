@@ -213,10 +213,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/KissKH.png",
-        "fileHash": "sha256-2dfef9bcefd742d9cc4950b9efd1489b2f78f8e906030d28661c41a113a6872e",
+        "fileHash": "sha256-bb0941eadee06a8a3bb00e26d55fff3022d2ffb7a67053b9e680d274b3f49a56",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 228001,
+        "fileSize": 228682,
         "status": 1,
         "language": "it",
         "authors": [
@@ -229,10 +229,10 @@
             "Anime",
             "AnimeMovie"
         ],
-        "version": 4,
+        "version": 5,
         "internalName": "KissKH",
         "description": "Catalogo KissKH nativo, drama e film asiatici con sottotitoli ITA/ENG e traduzione DeepL opzionale.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH-v4.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH-v5.cs3",
         "name": "KissKH"
     },
     {
