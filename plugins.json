@@ -213,10 +213,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/KissKH.png",
-        "fileHash": "sha256-bb0941eadee06a8a3bb00e26d55fff3022d2ffb7a67053b9e680d274b3f49a56",
+        "fileHash": "sha256-c4942e89369677a0778b38515a4afa5e3d64bff6c693be2fa07ea856a95d6771",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 228682,
+        "fileSize": 238629,
         "status": 1,
         "language": "it",
         "authors": [
@@ -229,10 +229,10 @@
             "Anime",
             "AnimeMovie"
         ],
-        "version": 5,
+        "version": 6,
         "internalName": "KissKH",
         "description": "Catalogo KissKH nativo, drama e film asiatici con sottotitoli ITA/ENG e traduzione DeepL opzionale.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH-v5.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH-v6.cs3",
         "name": "KissKH"
     },
     {
@@ -300,10 +300,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PriSynx.png",
-        "fileHash": "sha256-3f0db66cafdaa01fbdf06ddf4307e3d0ec0cc72dd8ec94cdf52b63552744e07c",
+        "fileHash": "sha256-4420772eb72eb9aca352f7cc888f7d9c0112474be92b021f8fec89fa334dd5a5",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 549556,
+        "fileSize": 563184,
         "status": 1,
         "language": "it",
         "authors": [
@@ -316,10 +316,10 @@
             "AsianDrama",
             "Live"
         ],
-        "version": 30,
+        "version": 31,
         "internalName": "PriSynx",
         "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay, KissKH, servizi debrid (con attesa del download) per IlCorsaroViola.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v30.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v31.cs3",
         "name": "PriSynx"
     },
     {
