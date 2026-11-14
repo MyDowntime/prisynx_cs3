@@ -22,10 +22,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/AnimeSaturn.png",
-        "fileHash": "sha256-ad882950901f04ff330b84f49d67477221c36412bd6afa691b47e905042de633",
+        "fileHash": "sha256-2366fd891511d350e3430185e6d2a31a7eedb2000be61b9c5a66b3807da74016",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 192700,
+        "fileSize": 205739,
         "status": 1,
         "language": "it",
         "authors": [
@@ -36,18 +36,18 @@
             "AnimeMovie",
             "OVA"
         ],
-        "version": 3,
+        "version": 4,
         "internalName": "AnimeSaturn",
         "description": "AnimeSaturn: anime sub ITA e ITA con mapping TMDB.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeSaturn-v3.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeSaturn-v4.cs3",
         "name": "AnimeSaturn"
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/AnimeUnity.png",
-        "fileHash": "sha256-c8fcca2e5a8ea170911bf49489ee793a72ae6339ea0d26f30c20fcc74552b547",
+        "fileHash": "sha256-0681b5d8a720f508b7a7bc8aa4a18cc601df3d5c3c72f14e6ffa0ef121372332",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 206286,
+        "fileSize": 218046,
         "status": 1,
         "language": "it",
         "authors": [
@@ -58,18 +58,18 @@
             "AnimeMovie",
             "OVA"
         ],
-        "version": 3,
+        "version": 4,
         "internalName": "AnimeUnity",
         "description": "AnimeUnity: anime sub ITA e ITA con mapping TMDB.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeUnity-v3.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeUnity-v4.cs3",
         "name": "AnimeUnity"
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/AnimeWorld.png",
-        "fileHash": "sha256-f7112a09fea9e37519dc0d58f9f68d0978ef274a275edaf64b06429958b3767e",
+        "fileHash": "sha256-e6914d679974d038619a3a74484e5537a15449ff186488e42f0dcae0aedb405b",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 196650,
+        "fileSize": 208426,
         "status": 1,
         "language": "it",
         "authors": [
@@ -80,10 +80,10 @@
             "AnimeMovie",
             "OVA"
         ],
-        "version": 3,
+        "version": 4,
         "internalName": "AnimeWorld",
         "description": "AnimeWorld: anime sub ITA e ITA con mapping TMDB.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeWorld-v3.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/AnimeWorld-v4.cs3",
         "name": "AnimeWorld"
     },
     {
