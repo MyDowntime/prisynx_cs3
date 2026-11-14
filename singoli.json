@@ -3,6 +3,6 @@
   "description": "PriSynx: ogni provider come estensione separata (VixSrc, VidxGo, PaCC, Guardoserie, Altadefinizione, RealTime, Toonitalia, IlCorsaroViola, AnimeUnity, AnimeSaturn, AnimeWorld, Filmez, OnlineSerieTV, CB01, Eurostreaming, MovyITA, DualSync, RaiPlay, KissKH).",
   "manifestVersion": 1,
   "pluginLists": [
-    "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/plugins-singoli-v30.json"
+    "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/plugins-singoli-v31.json"
   ]
 }
