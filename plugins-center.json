@@ -1,10 +1,10 @@
 [
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PriSynx.png",
-        "fileHash": "sha256-b69f17c682947b68da4447dfef998b2076932f83033380664e901036ec182932",
+        "fileHash": "sha256-608239decb73813b29e1dcad31ae4a8d86868e7f7bebd423174e8a1acb7212bd",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 539334,
+        "fileSize": 548972,
         "status": 1,
         "language": "it",
         "authors": [
@@ -17,14 +17,34 @@
             "AsianDrama",
             "Live"
         ],
-        "version": 15,
+        "version": 29,
         "internalName": "PriSynx",
-        "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay, KissKH e servizi debrid (con attesa del download) per IlCorsaroViola.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v15c.cs3",
+        "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay, KissKH, servizi debrid (con attesa del download) per IlCorsaroViola.",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v29.cs3",
         "name": "PriSynx"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/RaiPlay.png",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/VavooLive.png",
+        "fileHash": "sha256-1a646092526741d30b7d16f980a5b0885a22f6704b35075cd23bc98d0bf3ce19",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
+        "fileSize": 122850,
+        "status": 1,
+        "language": "it",
+        "authors": [
+            "PriSynx"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 6,
+        "internalName": "PriSynxLive",
+        "description": "PriSynx Live: TV in diretta Vavoo (nazioni selezionabili, EPG Italia), eventi sportivi live SportzX ed eventi live Partite.cc (calcio, basket, motori, tennis in diretta HD), con impostazioni per nazioni, sport e canali DRM.",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynxLive-v6.cs3",
+        "name": "PriSynxLive"
+    },
+    {
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/RaiPlay.png",
         "fileHash": "sha256-1cb562f903410af90a585d425ae567b4fc66ee6cedaa1cd52ea378d0a0342029",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",

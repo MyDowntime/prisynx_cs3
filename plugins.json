@@ -1,10 +1,10 @@
 [
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Altadefinizione.png",
-        "fileHash": "sha256-a04f835bc0d631b09e6b901bcf4a3cb1aab9528346cf99382c02781c9faa7a6f",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/Altadefinizione.png",
+        "fileHash": "sha256-7ca664a761fbea6db7f2851749e2d5466f72b7369ec4b472bd2809d067b56adf",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 170660,
+        "fileSize": 179242,
         "status": 1,
         "language": "it",
         "authors": [
@@ -21,11 +21,11 @@
         "name": "Altadefinizione"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/AnimeSaturn.png",
-        "fileHash": "sha256-c073e7d36cdb004d57f11bc3b49077a1977452fb475894aff9cf52266e954188",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/AnimeSaturn.png",
+        "fileHash": "sha256-ad882950901f04ff330b84f49d67477221c36412bd6afa691b47e905042de633",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 183786,
+        "fileSize": 192700,
         "status": 1,
         "language": "it",
         "authors": [
@@ -43,11 +43,11 @@
         "name": "AnimeSaturn"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/AnimeUnity.png",
-        "fileHash": "sha256-8d7f473723546f2128f28df90d9f2595468e1716f2d6a128db83238e484c9887",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/AnimeUnity.png",
+        "fileHash": "sha256-c8fcca2e5a8ea170911bf49489ee793a72ae6339ea0d26f30c20fcc74552b547",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 197846,
+        "fileSize": 206286,
         "status": 1,
         "language": "it",
         "authors": [
@@ -65,11 +65,11 @@
         "name": "AnimeUnity"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/AnimeWorld.png",
-        "fileHash": "sha256-c36801147427788cf995edaf4e5e4d39e56a77cf4df618e81760a7ad4e1137ac",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/AnimeWorld.png",
+        "fileHash": "sha256-f7112a09fea9e37519dc0d58f9f68d0978ef274a275edaf64b06429958b3767e",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 187652,
+        "fileSize": 196650,
         "status": 1,
         "language": "it",
         "authors": [
@@ -87,11 +87,11 @@
         "name": "AnimeWorld"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/CB01.png",
-        "fileHash": "sha256-e8ef169ed6fbc2fbf71591174c96a063fd7b938516e5a37ced8e6accfd48d997",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/CB01.png",
+        "fileHash": "sha256-d008d50e0f415c01f2c3478b308889e07254f6b2dde1605d91afe1636dd3ec19",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 178368,
+        "fileSize": 187063,
         "status": 1,
         "language": "it",
         "authors": [
@@ -101,18 +101,18 @@
             "Movie",
             "TvSeries"
         ],
-        "version": 3,
+        "version": 6,
         "internalName": "CB01",
         "description": "CB01: film e serie TV in streaming.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/CB01-v3.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/CB01-v6.cs3",
         "name": "CB01"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/DualSync.png",
-        "fileHash": "sha256-9146c59d0b7ad1788cc377f5a2644198aa779b6524d6d7027c62f4e3d90a3bbf",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/DualSync.png",
+        "fileHash": "sha256-0989c2cdf2f61f3cc5bc57a9d7dffe5871166ac49b55244f393781f924b75ed4",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 185492,
+        "fileSize": 194465,
         "status": 1,
         "language": "it",
         "authors": [
@@ -129,11 +129,11 @@
         "name": "DualSync"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Eurostreaming.png",
-        "fileHash": "sha256-c21fe5da002ebbdb5aaca74173e532275353f120fe499dee774ea93576cacde3",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/Eurostreaming.png",
+        "fileHash": "sha256-1f0d55889f2cd47526da4cd8849a3462d8e0992ecf27dc8f6f92d52b4ceecdd2",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 172878,
+        "fileSize": 181278,
         "status": 1,
         "language": "it",
         "authors": [
@@ -143,18 +143,18 @@
             "Movie",
             "TvSeries"
         ],
-        "version": 3,
+        "version": 6,
         "internalName": "Eurostreaming",
         "description": "Eurostreaming: film e serie TV in streaming.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Eurostreaming-v3.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Eurostreaming-v6.cs3",
         "name": "Eurostreaming"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Filmez.png",
-        "fileHash": "sha256-42bdd902b7be4fad4ea20e4a79ab71063d6090c4233feb272b5892debabd631d",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/Filmez.png",
+        "fileHash": "sha256-ef85bb31a83d29274b46649c661d563d58e5488c3993df0fa256bab66f979053",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 166249,
+        "fileSize": 175063,
         "status": 1,
         "language": "it",
         "authors": [
@@ -163,18 +163,18 @@
         "tvTypes": [
             "Movie"
         ],
-        "version": 2,
+        "version": 5,
         "internalName": "Filmez",
         "description": "Filmez: catalogo film WordPress via MaxStream.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Filmez-v2.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/Filmez-v5.cs3",
         "name": "Filmez"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Guardoserie.png",
-        "fileHash": "sha256-202834e52ff153efa9a3c131bf14a3fd5a210e2b0c951b748ff748eeec484a78",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/Guardoserie.png",
+        "fileHash": "sha256-9d3fde41845b569951c2ffae64337abeb4ede97df0fe14af56d24c5fb7751546",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 191136,
+        "fileSize": 200090,
         "status": 1,
         "language": "it",
         "authors": [
@@ -191,11 +191,11 @@
         "name": "Guardoserie"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/IlCorsaroViola.png",
-        "fileHash": "sha256-74cf128beedf594d7874a48154bd81cc037acd940e9daf07d4f5de0ca1024ea6",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/IlCorsaroViola.png",
+        "fileHash": "sha256-b08a73c8ac3d3d2f0961f9281b8a8cfd8106e7bbc4966b44796edf965994c2ab",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 173545,
+        "fileSize": 181971,
         "status": 1,
         "language": "it",
         "authors": [
@@ -213,10 +213,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/KissKH.png",
-        "fileHash": "sha256-6bc32e18bfd63dc1f73099c5dd7f2b552fa204a004607c6d1af60b8b8b47bee0",
+        "fileHash": "sha256-2dfef9bcefd742d9cc4950b9efd1489b2f78f8e906030d28661c41a113a6872e",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 219461,
+        "fileSize": 228001,
         "status": 1,
         "language": "it",
         "authors": [
@@ -232,15 +232,15 @@
         "version": 4,
         "internalName": "KissKH",
         "description": "Catalogo KissKH nativo, drama e film asiatici con sottotitoli ITA/ENG e traduzione DeepL opzionale.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH-v4c.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/KissKH-v4.cs3",
         "name": "KissKH"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/MovyITA.png",
-        "fileHash": "sha256-fdfb529d53da8bfe3b793141b475de0181984dccc74860cbc0ebddf37e82b8e4",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/MovyITA.png",
+        "fileHash": "sha256-558533a622228ddeac07460e67e77bc504b94391edd9ef331dd10b76221b85bf",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 187931,
+        "fileSize": 196769,
         "status": 1,
         "language": "it",
         "authors": [
@@ -257,11 +257,11 @@
         "name": "MovyITA"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/OnlineSerieTV.png",
-        "fileHash": "sha256-499541a3759611b1508494ab654e5778ed5549466e3ac38bd88128df4d271066",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/OnlineSerieTV.png",
+        "fileHash": "sha256-fd6d115cf5f37026e86e1d766c42ccbb68950f171500f534e70b9ef6013737fe",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 166282,
+        "fileSize": 175119,
         "status": 1,
         "language": "it",
         "authors": [
@@ -271,18 +271,18 @@
             "Movie",
             "TvSeries"
         ],
-        "version": 2,
+        "version": 5,
         "internalName": "OnlineSerieTV",
         "description": "OnlineSerieTV: film e serie TV WordPress via MaxStream.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/OnlineSerieTV-v2.cs3",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/OnlineSerieTV-v5.cs3",
         "name": "OnlineSerieTV"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/PaCC.png",
-        "fileHash": "sha256-c60f0c825a665570b147ee9da28c41bdbd56994d9cca4c911a61631b1385273b",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PaCC.png",
+        "fileHash": "sha256-ad9f0cd08db3b489cb3059e4d6dbd27e628966c22306cd0fb6673ee3d5718ba5",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 171714,
+        "fileSize": 180202,
         "status": 1,
         "language": "it",
         "authors": [
@@ -300,10 +300,10 @@
     },
     {
         "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/PriSynx.png",
-        "fileHash": "sha256-b69f17c682947b68da4447dfef998b2076932f83033380664e901036ec182932",
+        "fileHash": "sha256-608239decb73813b29e1dcad31ae4a8d86868e7f7bebd423174e8a1acb7212bd",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 539334,
+        "fileSize": 548972,
         "status": 1,
         "language": "it",
         "authors": [
@@ -316,14 +316,34 @@
             "AsianDrama",
             "Live"
         ],
-        "version": 15,
+        "version": 29,
         "internalName": "PriSynx",
-        "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay, KissKH e servizi debrid (con attesa del download) per IlCorsaroViola.",
-        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v15c.cs3",
+        "description": "PriSynx: tutte le sorgenti in un'unica estensione (RaiPlay e KissKH inclusi), con menu TV per scegliere provider, ordine, cataloghi TMDB, TopX, anime, RaiPlay, KissKH, servizi debrid (con attesa del download) per IlCorsaroViola.",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynx-v29.cs3",
         "name": "PriSynx"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/RaiPlay.png",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/VavooLive.png",
+        "fileHash": "sha256-1a646092526741d30b7d16f980a5b0885a22f6704b35075cd23bc98d0bf3ce19",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
+        "fileSize": 122850,
+        "status": 1,
+        "language": "it",
+        "authors": [
+            "PriSynx"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 6,
+        "internalName": "PriSynxLive",
+        "description": "PriSynx Live: TV in diretta Vavoo (nazioni selezionabili, EPG Italia), eventi sportivi live SportzX ed eventi live Partite.cc (calcio, basket, motori, tennis in diretta HD), con impostazioni per nazioni, sport e canali DRM.",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/PriSynxLive-v6.cs3",
+        "name": "PriSynxLive"
+    },
+    {
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/RaiPlay.png",
         "fileHash": "sha256-1cb562f903410af90a585d425ae567b4fc66ee6cedaa1cd52ea378d0a0342029",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
@@ -345,11 +365,11 @@
         "name": "RaiPlay"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/RealTime.png",
-        "fileHash": "sha256-f4dd7159ba6f3107ee9dbbb99bf096cd2bf767dd1c89a09b412f7ee8f9f7076a",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/RealTime.png",
+        "fileHash": "sha256-60fa985c12f7022a49fccdef85101316213d3d8abe3f3a0c01d5d256c661668a",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 186301,
+        "fileSize": 195307,
         "status": 1,
         "language": "it",
         "authors": [
@@ -367,11 +387,11 @@
         "name": "RealTime"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/Toonitalia.png",
-        "fileHash": "sha256-d0ea3814f0a9d63ef54b02a6003a3140ff4be73d43006d343d218906e6b49e9a",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/Toonitalia.png",
+        "fileHash": "sha256-935a6d4b6d63fa064bcfe7e9af236b1cc93711c07be300f675ecda220d182875",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 185303,
+        "fileSize": 194215,
         "status": 1,
         "language": "it",
         "authors": [
@@ -390,11 +410,31 @@
         "name": "Toonitalia"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/VidxGo.png",
-        "fileHash": "sha256-9d692633be179c9ba94fed0a694ba65cfa63a85fdfb9442a8c0677aaf229d3f5",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/VavooLive.png",
+        "fileHash": "sha256-c49bb33ea2bbec6f29057051e96ba7fb37750fed70b8358fb259668563f2da4e",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 175986,
+        "fileSize": 44409,
+        "status": 1,
+        "language": "it",
+        "authors": [
+            "PriSynx"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 4,
+        "internalName": "VavooLive",
+        "description": "Vavoo Live: canali TV in diretta (Italia di default, altre nazioni selezionabili da PriSynx) con copertine TvVoo.",
+        "url": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/builds/VavooLive-v4.cs3",
+        "name": "VavooLive"
+    },
+    {
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/VidxGo.png",
+        "fileHash": "sha256-e120773b944c1d145975d7442e96b631e357c133e3fe5b6d117bab8618c56c12",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
+        "fileSize": 184564,
         "status": 1,
         "language": "it",
         "authors": [
@@ -411,11 +451,11 @@
         "name": "VidxGo"
     },
     {
-        "iconUrl": "https://raw.githubusercontent.com/MyDowntime/prisynx_cs3/main/assets/logos/VixSrc.png",
-        "fileHash": "sha256-b58abee75b8177711685875e61a21e52b5d68c0a31249be25225c8bd87753f9d",
+        "iconUrl": "https://raw.githubusercontent.com/qwertyuiop8899/prisynx_cs3/main/assets/logos/VixSrc.png",
+        "fileHash": "sha256-e16cf4a1839f677b8c2fc2a42a5475bccc91db4227e18fe4575322ad19583292",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MyDowntime/prisynx_cs3",
-        "fileSize": 172780,
+        "fileSize": 181119,
         "status": 1,
         "language": "it",
         "authors": [
