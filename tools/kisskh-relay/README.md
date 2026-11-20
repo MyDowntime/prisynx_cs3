@@ -83,6 +83,72 @@ Le credenziali **non** vanno committate: restano nel `docker-compose.yml` locale
 in variabili d'ambiente. In questo repository il compose contiene solo segnaposto
 vuoti.
 
+## Rinnovo rapido (senza ricreare il container)
+
+`cf_clearance` e legato a **due** cose: l'IP pubblico che l'ha ottenuto e lo
+**User-Agent esatto** del browser. Se una delle due non combacia Cloudflare
+risponde `403` + "Just a moment…" e il cookie e inutile, anche se appena copiato.
+
+`POST /renew` accetta cookie e UA a caldo e li prova subito:
+
+```bash
+curl -s -X POST "http://<host>:8191/renew?token=IL_TUO_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"cookies":"cf_clearance=...","user_agent":"Mozilla/5.0 ... Chrome/158 ..."}'
+```
+
+La risposta dice se Cloudflare lo accetta, senza leggere i log:
+
+```json
+{"status":200,"reason":"ok","verdict":"ok: cookie accettato","clearance":true}
+{"status":403,"reason":"challenge","verdict":"cookie rifiutato da Cloudflare","hint":"..."}
+```
+
+Automatico, dal PC (serve Chrome + `pip install playwright`): apre Chrome,
+supera la verifica, manda cookie e UA coerenti al relay e stampa il verdetto.
+
+```bash
+python grab_cookie.py http://192.168.1.50:8191 IL_TUO_TOKEN
+```
+
+Oltre a cookie e UA passa anche la **scadenza reale** letta dal browser: su
+kisskh.co `cf_clearance` dura circa un anno, quindi `RELAY_CLEARANCE_TTL` non
+serve più a nulla in modalità A. Cloudflare però può invalidarlo prima (IP
+cambiato, UA diverso, cambio di regole lato sito): se ricompare la challenge, si
+rilancia il comando.
+
+Nessuno dei due comandi richiede di ricreare il container: il rinnovo e immediato
+e la cache viene svuotata.
+
+Chi rinnova e **chi esegue cosa**: `grab_cookie.py` gira **sul PC**, perche ha
+bisogno di Chrome con la finestra visibile per cliccare la verifica; il tvbox
+esegue solo il relay (FastAPI + curl_cffi, niente browser). Cookie e UA arrivano
+al box via LAN con `POST /renew`, e il cookie vale perche il PC e il box escono
+con lo stesso IP pubblico (stessa LAN/router). Se il PC usa una VPN, o il box ne
+usa una, gli IP sono diversi e il cookie non vale: controllo con `check.py`.
+
+`/renew` tiene il clearance **in memoria**: un riavvio del container (o del box)
+lo perde e si torna ai cookie del compose. Per evitarlo imposta
+`RELAY_STATE_FILE: "/state/clearance.json"` e monta il volume `./state:/state`:
+il file contiene il cookie, quindi non va committato (`.gitignore` gia pronto).
+
+### Rinnovo da telefono (senza PC)
+
+Chrome mobile da solo non basta: `cf_clearance` e `HttpOnly` (JavaScript non puo
+leggerlo) e Chrome Android non ha i DevTools. Serve un browser Android con le
+estensioni (Kiwi, Quetta, Mises e simili) piu un'estensione tipo **Cookie-Editor**:
+
+1. apri `https://kisskh.co` in quel browser e supera la verifica;
+2. Cookie-Editor -> copia il valore di `cf_clearance` (va bene anche senza `cf_clearance=`);
+3. apri `http://<host>:8191/renew-ui?token=IL_TUO_TOKEN` **nello stesso browser**
+   (lo User-Agent viene precompilato, ed e quello che Cloudflare ha visto), incolla
+   il cookie e premi *Verifica e salva*;
+4. la pagina mostra il verdetto: `OK: cookie accettato` oppure il motivo del rifiuto.
+
+Non passare a "sito desktop" tra il punto 1 e il punto 3: cambierebbe lo UA e il
+cookie non varrebbe piu. Vale la stessa regola dell'IP: telefono e box devono
+uscire dalla stessa rete.
+
 ## Configurazione nel plugin
 
 KissKH -> ingranaggio delle impostazioni -> **Relay Cloudflare (opzionale)**:
@@ -108,7 +174,9 @@ Note:
 | `GET /fetch?url=&token=` | scarica una URL (API, immagini, file `.srt` del CDN) e ne restituisce il body |
 | `POST /store?token=&ext=srt` | pubblica un sottotitolo generato (decifrato o tradotto da DeepL); risponde `{"url": "..."}` |
 | `GET /sub/<id>.srt` | serve il sottotitolo pubblicato (il player riceve un URL HTTP normale) |
-| `GET /healthz` | stato, cookie, statistiche |
+| `POST /renew?token=` | sostituisce cookie e UA **a caldo** e li prova subito (vedi sotto) |
+| `GET /renew-ui?token=` | pagina web minimale per rinnovare da browser, anche da telefono |
+| `GET /healthz` | stato, cookie, ultimo esito upstream, statistiche |
 
 `/store` serve perche sulla Android TV il player non riesce a leggere da un server
 locale del telefono: il plugin carica il testo sul relay e passa al player un URL
@@ -119,10 +187,12 @@ HTTP normale. Senza `/store` funzionano comunque API e sottotitoli `.srt`/`.vtt`
 | Variabile | Default | Significato |
 |---|---|---|
 | `RELAY_TOKEN` | *(vuoto = nessun controllo)* | token richiesto in `?token=` |
-| `RELAY_HOSTS` | `kisskh.co` | host permessi, separati da virgola; include i sottodomini |
+| `RELAY_HOSTS` | `kisskh.co` | host permessi, separati da virgola; include i sottodomini. Il primo host è il sito (usato da `/renew` e dal riscaldamento) |
 | `RELAY_COOKIES` | *(vuoto)* | cookie `cf_clearance=...; __cf_bm=...` copiati a mano |
 | `RELAY_USER_AGENT` | *(vuoto)* | UA esatto del browser da cui hai copiato i cookie |
-| `RELAY_CLEARANCE_TTL` | `1500` | validita del cookie risolto/iniettato, secondi |
+| `RELAY_PROBE_URL` | API `DramaList/List` | URL che `/renew` usa per verificare subito il cookie |
+| `RELAY_CLEARANCE_TTL` | `1500` | fallback se la scadenza vera non è nota; `/renew` usa quella del cookie |
+| `RELAY_STATE_FILE` | *(vuoto = off)* | file dove salvare il clearance rinnovato (sopravvive al riavvio; serve un volume) |
 | `RELAY_SOLVER_URL` | *(vuoto = disattivato)* | endpoint FlareSolverr, es. `http://flaresolverr:8191/v1` |
 | `RELAY_SOLVER_TIMEOUT` | `120` | tempo massimo concesso a FlareSolverr, secondi |
 | `RELAY_SOLVER_WAIT` | `0` | secondi di attesa extra dopo il caricamento (`waitInSeconds`) |
@@ -140,6 +210,15 @@ HTTP normale. Senza `/store` funzionano comunque API e sottotitoli `.srt`/`.vtt`
 
 Se compare `{"error":"host not allowed","host":"..."}`, aggiungi quell'host a
 `RELAY_HOSTS`: il CDN dei sottotitoli puo stare su un dominio separato.
+
+La verifica di `/renew` e il riscaldamento usano **il sito** (`kisskh.co`), mai un
+host CDN: mettere un dominio CDN per primo non cambia niente. Attenzione che un
+host in `RELAY_HOSTS` che non risolve piu (es. `cdnvideo11.shop`, che ora non ha
+record A) fa fallire solo le richieste dirette a quell'host, non il resto.
+
+Se `/renew` risponde `"verdict":"relay non ha raggiunto il sito (DNS/rete)"`, il
+cookie e stato salvato ma **non verificato**: e un problema di DNS/rete del
+container, non un rifiuto di Cloudflare.
 
 ## Test
 
@@ -165,9 +244,16 @@ curl -s -D- -o /dev/null "http://localhost:8191/fetch?token=IL_TUO_TOKEN&url=htt
 
 ## Se resta 403
 
+0. **Rileggi il verdetto**, non i log: `curl -s -X POST "http://<host>:8191/renew?token=..." -d '{"cookies":"..."}'`
+   dice in un secondo se il problema e il cookie (`challenge`) o l'IP (`blocked`).
+   `docker compose exec kisskh-relay python check.py` mostra anche l'IP di uscita
+   del container: deve essere lo stesso che vede il browser
+   (`https://api.ipify.org` aperto nel browser che ha prodotto il cookie).
 1. **Controlla i log**: `docker compose logs flaresolverr | tail -50`. Se vedi
    `Challenge not solved` / `Error solving the challenge`, anche il browser
-   headless e bloccato.
+   headless e bloccato. Su kisskh.co la verifica e spesso un Turnstile con casella
+   da cliccare: FlareSolverr non clicca, quindi su questi IP il solve automatico
+   non passa e resta la modalita A (`/renew` o `grab_cookie.py`).
 2. **Prova un altro IP**: se da un'altra rete la richiesta passa, il problema e
    l'IP di partenza -> sposta il relay su un VPS (Oracle Free Tier, Hetzner) con lo
    stesso `docker compose`.

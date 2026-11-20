@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir \
     "httpx>=0.27"
 
 COPY app.py .
+COPY check.py .
 
 EXPOSE 8191
 

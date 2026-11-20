@@ -35,7 +35,14 @@ services:
       # cf_clearance (e __cf_bm) e incolla qui lo UA esatto di quel browser.
       RELAY_COOKIES: ""
       RELAY_USER_AGENT: ""
+      # Scadenza: la decide Cloudflare (kisskh: ~1 anno). Qui e solo il fallback
+      # quando il cookie viene da env e la scadenza vera non e nota; /renew usa
+      # quella reale del cookie.
       RELAY_CLEARANCE_TTL: "3600"
+
+      # Persistenza del clearance rinnovato con POST /renew: senza file, ogni
+      # riavvio del container torna ai cookie qui sopra (quasi sempre scaduti).
+      RELAY_STATE_FILE: "/state/clearance.json"
 
       # --- Modalita B: solve automatico con FlareSolverr (profilo "solver") ---
       # Lasciare vuoto quando si usa la modalita A.
@@ -44,6 +51,9 @@ services:
 
     networks:
       - relay
+    volumes:
+      # Stato del clearance rinnovato: contiene il cookie, cartella ignorata da git.
+      - ./state:/state
     logging:
       driver: json-file
       options:
